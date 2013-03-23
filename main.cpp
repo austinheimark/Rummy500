@@ -98,6 +98,7 @@ void outputIntro()
 		"Each turns starts with picking \nup a card, and ends by discarding a card.\n" <<
 		"The hand continues until \none player has used all of their cards.\n" <<
 		"Points are tallied at the end of each hand.\n" <<
+		"Point per card are as follows:\n" << 
 		"2 ... 9 --> " << TWO_THROUGH_NINE_POINTS << " points\n" <<
 		"10 ... King --> " << TEN_THROUGH_KING_POINTS << " points\n" <<
 		"Ace high (ex: Queen,King,Ace\n of clubs, ex: 3 Aces) --> " << ACE_HIGH_POINTS << " points\n" <<
@@ -113,9 +114,9 @@ void outputEnding(Player& player, Computer& comp)
 {
 	// Whichever player has the higher score wins
 	if ( player.GetScore() >= comp.GetScore() )
-		cout << "\n\nCongratulations " << player.GetName() << "! You beat the computer in Rummy 500!";
+		cout << "\nCongratulations, " << player.GetName() << "! You beat the computer in Rummy 500!";
 	else
-		cout << "\n\nSorry, " << comp.GetName() << " defeated you!";
+		cout << "\nSorry, " << comp.GetName() << " defeated you!";
 
 	// Thanks to the players
 	cout << "\n\nI hope you enjoyed my program." <<
