@@ -96,13 +96,13 @@ void outputIntro()
 		"Players may meld a set of \ncards once they have at least 3 of a kind\n" <<
 		"(ex: 3 Kings) or 3 in a row \nof the same suit (ex: 4,5,6 of spades).\n" <<
 		"Each turns starts with picking \nup a card, and ends by discarding a card.\n" <<
-		"The hand continues until one player has used all of their cards.\n" <<
+		"The hand continues until \none player has used all of their cards.\n" <<
 		"Points are tallied at the end of each hand.\n" <<
 		"2 ... 9 --> " << TWO_THROUGH_NINE_POINTS << " points\n" <<
 		"10 ... King --> " << TEN_THROUGH_KING_POINTS << " points\n" <<
-		"Ace high (ex: Queen,King,Ace of clubs, ex: 3 Aces) --> " << ACE_HIGH_POINTS << " points\n" <<
+		"Ace high (ex: Queen,King,Ace\n of clubs, ex: 3 Aces) --> " << ACE_HIGH_POINTS << " points\n" <<
 		"Ace low (ex: Ace,2,3 of hearts) --> " << ACE_LOW_POINTS << " points\n" <<
-		"New hands keep being dealt until a player has over " << WINNING_SCORE << " points\n" <<
+		"New hands keep being dealt \nuntil a player has over " << WINNING_SCORE << " points\n" <<
 		"If both players end with over " << WINNING_SCORE << "\npoints, player with more points wins.\n" <<
 		"In the event of two players being tied \nwith over " << WINNING_SCORE << " points:\n" <<
 		"Another hand will be played.\n" <<
