@@ -2,5 +2,3 @@
 // Written by Austin Heimark
 
 #include "Computer.h"
-
-// Test

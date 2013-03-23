@@ -32,8 +32,6 @@ void main ()
 
 	string name;
 
-	// Test
-
 	// Retrieve user's name and initialize the Player
 	cout << "\nEnter your name: ";
 	getline(cin, name);
