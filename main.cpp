@@ -23,6 +23,10 @@ void outputIntro();
 // Outputs winner and ending
 void outputEnding(Player& player, Computer& comp);
 
+// Deals the deck
+// Inserts a card into players hand, pops card off of the deck
+// then inserts a card into computer's hand and pops a card off
+// the deck. Continues till each player has a full hand
 void dealDeck(Player& player, Computer& comp, Cards& deck);
 
 void main ()
