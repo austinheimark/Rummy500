@@ -106,10 +106,25 @@ int Cards::GetDeckSize() const
 	return Deck.size();
 }
 
-void Cards::PopulatePickPile()
+void Cards::AdjustPickPile()
 {
 	int number = Deck.size() - 1;
 	string copy = Deck[number];
 	Deck.pop_back();
 	PickFromPile.push_back(copy);
+}
+
+int Cards::GetPickFromPileSize() const
+{
+	return PickFromPile.size();
+}
+
+string Cards::GetPickFromPileCard(int number) const
+{
+	return PickFromPile[number];
+}
+
+void Cards::InsertIntoPickFromPile(string card)
+{
+	PickFromPile.push_back(card);
 }

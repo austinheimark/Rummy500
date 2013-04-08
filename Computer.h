@@ -18,6 +18,7 @@ public:
 		Score = score;
 	}
 
-
+	// Overriding of the same function from Player class
+	int WhatDeckToPickFrom(Cards deck) const;
 
 };

@@ -14,6 +14,8 @@
 #define ACE_LOW_POINTS 5
 #define CARDS_DEALT 7
 #define DECK_SIZE 52
+#define PICK_FROM_DECK -1
+#define NOT_POSSIBLE -1
 
 using namespace std;
 
@@ -29,6 +31,10 @@ void outputEnding(Player& player, Computer& comp);
 // the deck. Continues till each player has a full hand
 void dealDeck(Player& player, Computer& comp, Cards& deck);
 
+void gamePlay(Player& player, Computer& comp, Cards& deck, int count);
+
+void discardCard (Player& user, Computer& comp, Cards& deck, int cardSpot, int count);
+
 void main ()
 {
 	// Outputs the rules for the game
@@ -42,7 +48,7 @@ void main ()
 	Player user(name);
 
 	// Retrieve a name for the computer and initialize the computer
-	cout << "\nEnter a name a for the computer: ";
+	cout << "\nEnter a name for the computer: ";
 	getline(cin,name);
 	Computer comp(name);
 
@@ -54,20 +60,25 @@ void main ()
 		Cards deck;
 		deck.ShuffleDeck();
 
-		cout << "User's current score: " << user.GetScore() << "\n" <<
-			"Comp's current score: " << comp.GetScore() << "\n";
+		cout << "Your current score: " << user.GetScore() << "\n" <<
+			comp.GetName() << "'s current score: " << comp.GetScore() << "\n";
 
 		// Deal the deck
 		dealDeck(user,comp,deck);
 
+		unsigned int count = 0;
+
 		// Commence the game, game continues as long as both players have cards
-		//while( (user.GetHandSize() > 0) && (comp.GetHandSize() > 0) )
-		//{
+		while( (user.GetHandSize() > 0) && (comp.GetHandSize() > 0) )
+		{
+			deck.DisplayAvailableCards();		// Show the player's what they are working with
+			cout << " X ";						// X represents the top of the deck
 
+			// Must call this every play through the hand
+			gamePlay(user,comp,deck,count);
 
-
-		//	
-		//}
+			count++;
+		}
 
 		// Calculate scores
 		user.CalculateScore();
@@ -75,6 +86,7 @@ void main ()
 		the = 0;
 	}
 
+	// Someone has won by now
 	outputEnding(user,comp);
 
 	system("pause");
@@ -135,5 +147,70 @@ void dealDeck(Player& user, Computer& comp, Cards& deck)
 		deck.PopOffCard();
 		i++;
 	}
-	deck.PopulatePickPile();
+	deck.AdjustPickPile();
+}
+
+void gamePlay(Player& user, Computer& comp, Cards& deck, int count)
+{
+	if (count%2==0)	// User's turn
+	{
+		// First must choose cards to pick up
+		if (user.WhatDeckToPickFrom(deck) == PICK_FROM_DECK)	// Picking from the top of the deck
+		{
+			user.InsertIntoHand(deck.ReturnCard(deck.GetDeckSize()-1));
+			deck.PopOffCard();
+		} else {	// They can pick from the pick up pile
+
+
+		}
+
+		int number = 0;
+		// Then must determine if you can meld cards or not
+		while(user.TestIfCanMeld(deck,number) != NOT_POSSIBLE)
+		{
+			//Since they can meld, if they want to let them!
+			
+			number = user.TestIfCanMeld(deck,number);
+		}
+
+		// Finally, must discard a card
+		discardCard(user,comp,deck,user.WhatCardToDiscard(deck),count);
+
+	} else			// Computer's turn
+	{
+		if (comp.WhatDeckToPickFrom(deck) == PICK_FROM_DECK)	// Picking from the top of the deck
+		{
+			comp.InsertIntoHand(deck.ReturnCard(deck.GetDeckSize()-1));
+			deck.PopOffCard();
+		} else {	// They can pick from the pick up pile
+
+
+		}
+		
+		int number = 0;
+		// Then must determine if you can meld cards or not
+		while(user.TestIfCanMeld(deck,number) != NOT_POSSIBLE)
+		{
+			//Since they can meld, if they want to let them!
+			
+			
+		}
+
+		// Finally, must discard a card
+		discardCard(user,comp,deck,comp.WhatCardToDiscard(deck),count);
+	}
+
+}
+
+void discardCard (Player& user, Computer& comp, Cards& deck, int cardSpot, int count)
+{
+	if (count%2==0)		// User is discarding a card
+	{
+		deck.InsertIntoPickFromPile(user.ReturnCard(cardSpot));	// First insert the card into the pick from pile
+		user.PopCard(cardSpot);									// Then pop the card out of the user's hand
+	} else				// Player is discarding a card
+	{
+		deck.InsertIntoPickFromPile(comp.ReturnCard(cardSpot));
+		user.PopCard(cardSpot);
+	}
 }

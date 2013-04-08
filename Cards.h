@@ -26,8 +26,18 @@ public:
 	// Returns the size of the deck
 	int GetDeckSize() const;
 
+	// Returns the size of the pick up pile
+	int GetPickFromPileSize() const;
 
-	void PopulatePickPile();
+	// Populates the pick from
+	void AdjustPickPile();
+
+	// Returns card at number from the pick from pile
+	string GetPickFromPileCard(int number) const;
+
+	// Inserts card at the end of the pick from pile
+	void InsertIntoPickFromPile(string card);
+
 private:
 	vector<string> Deck;
 	vector<string> PickFromPile;

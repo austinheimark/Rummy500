@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include "Cards.h"
 
 using namespace std;
 
@@ -37,6 +38,27 @@ public:
 	// Displays the hand
 	// Does not need to be virtual (once done testing)
 	virtual void DisplayHand() const;
+
+	// Determine what deck the player will pick from 
+	virtual int WhatDeckToPickFrom(Cards deck) const;
+
+	// Returns true if the two card number d from the deck's pick from
+	// pile is the same as card p from the player's hand
+	virtual bool CompareCardsOnPickFromPile (Cards deck,int d,int p) const;
+
+	// Returns true if the player can meld and false if cannot
+	virtual int TestIfCanMeld (Cards deck, int number) const;
+
+	// Determines what card the player will discard
+	virtual int WhatCardToDiscard (Cards deck) const;
+
+	// Group the players cards together to make the hand easier to view
+	virtual void OrganizeHand () const;
+
+	// Returns the card at this location
+	virtual string ReturnCard (int number);
+
+	virtual void PopCard (int number);
 
 protected:
 	string Name;	// Player name
