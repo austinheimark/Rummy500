@@ -21,3 +21,17 @@ int Computer::WhatDeckToPickFrom(Cards deck) const
 	// No option
 	return PICK_FROM_DECK;
 }
+
+int Player::WhatCardToDiscard (Cards deck) const
+{
+	int cardToDiscard;
+
+	// Must do some calculations to determine which card to discard
+
+	return cardToDiscard;
+}
+
+vector<string> Computer::ReturnVectorOfMyMeldedCards () const
+{
+	return MeldedCards;
+}

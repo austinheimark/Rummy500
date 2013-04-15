@@ -40,14 +40,16 @@ public:
 	virtual void DisplayHand() const;
 
 	// Determine what deck the player will pick from 
-	virtual int WhatDeckToPickFrom(Cards deck) const;
+	virtual int WhatDeckToPickFrom(Cards deck, vector<string> computersMeldedCards) const;
 
 	// Returns true if the two card number d from the deck's pick from
 	// pile is the same as card p from the player's hand
 	virtual bool CompareCardsOnPickFromPile (Cards deck,int d,int p) const;
 
-	// Returns true if the player can meld and false if cannot
-	virtual int TestIfCanMeld (Cards deck, int number) const;
+	// Start checking from number
+	// If can meld, return the number card that can be melded
+	// If cannot meld, return NOT_POSSIBLE
+	virtual int TestIfCanMeld (Cards& deck, vector<string> checkTheseCards) const;
 
 	// Determines what card the player will discard
 	virtual int WhatCardToDiscard (Cards deck) const;
@@ -56,9 +58,19 @@ public:
 	virtual void OrganizeHand () const;
 
 	// Returns the card at this location
-	virtual string ReturnCard (int number);
+	virtual string ReturnCard (int number) const;
 
+	// Pops the card at number from the Hand
 	virtual void PopCard (int number);
+
+	// Display the melded cards
+	virtual void DisplayMeldedCards () const;
+
+	// Populates melded cards
+	virtual void PopulateMeldedCards (vector<int> CardSpotsIWillMeld);
+
+	// Enters this method because the player wants to meld cards
+	virtual vector<int> SecondTimeMeld (Cards& deck, vector<string> otherPlayersCards) const;
 
 protected:
 	string Name;	// Player name

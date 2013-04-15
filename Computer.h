@@ -21,4 +21,9 @@ public:
 	// Overriding of the same function from Player class
 	int WhatDeckToPickFrom(Cards deck) const;
 
+	// Overriding of the same function from Player class
+	int WhatCardToDiscard (Cards deck) const;
+
+	vector<string> ReturnVectorOfMyMeldedCards () const;
+
 };
