@@ -2,7 +2,7 @@
 // Written by Austin Heimark
 
 #include "Cards.h"
-#include <stdlib.h>
+#include <stdlib.h> 
 #include <time.h>
 
 #define DECK_SIZE 52
