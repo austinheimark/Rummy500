@@ -1,6 +1,8 @@
 // main.cpp - Rummy 500 test program
 // Written by Austin Heimark
 
+// Line count --> 933
+
 #include <iostream>
 #include <vector>
 #include "Player.h"
@@ -44,6 +46,9 @@ void InsertPickFromPile(Player& user, Computer& comp, Cards& deck, int choice, i
 // Populates a vector of the cards that the player will meld from their own hand
 vector<int> CardsToMeld(Player& user, Computer& comp, int count);
 
+// Outputs the scores of each player after how many rounds
+void ScoreOutput(Player& user, Computer& comp, int count);
+
 void main ()
 {
 	// Outputs the rules for the game
@@ -60,39 +65,48 @@ void main ()
 	cout << "\nEnter a name for the computer: ";
 	getline(cin,name);
 	Computer comp(name);
+	cout << "\n";
 
-	bool the = 1;
+	unsigned int count = 0;
+	unsigned int roundCount = 0;
+	//bool the = 1;
 	// Game continues as long as neither player has over 500 points
-	while ( the && (user.GetScore() < WINNING_SCORE) && (comp.GetScore() < WINNING_SCORE) )
+	while ( /*the && */(user.GetScore() < WINNING_SCORE) && (comp.GetScore() < WINNING_SCORE) )
 	{
-		cout << "Your current score: " << user.GetScore() << "\n" <<
-			comp.GetName() << "'s current score: " << comp.GetScore() << "\n";
+		// Output scores
+		ScoreOutput(user,comp,roundCount);
 
 		// Initialize and shuffle up the deck
 		Cards deck;
 		deck.ShuffleDeck();
 
+		// Must clear up both the players and computers hands and melded card piles
+		user.ClearHandAndMeldedCards();
+		comp.ClearHandAndMeldedCards();
+
 		// Deal the deck
 		dealDeck(user,comp,deck);
 
-		unsigned int count = 0;
+		// Reassure that the count is set back to 0
+		count = 0;
 
 		// Commence the game, game continues as long as both players have cards
-		while( count < 1 && (user.GetHandSize() > 0) && (comp.GetHandSize() > 0) && (deck.GetDeckSize() > 0) )
+		while( (user.GetHandSize() > 0) && (comp.GetHandSize() > 0) && (deck.GetDeckSize() > 0) )
 		{
-			cout << "Updated pick from pile:\nX ";		// X represents the top of the deck
+			cout << "Current pick from pile:\n";		// X represents the top of the deck
 			deck.DisplayAvailableCards();		// Show the player's what they are working with
 			
 			// Must call this every play through the hand
 			gamePlay(user,comp,deck,count);
 
-			count++;
+			count+=2;
 		}
+		roundCount++;
 
 		// Calculate scores
 		user.CalculateScore();
 		comp.CalculateScore();
-		the = 0;
+		//the = 0;
 	}
 
 	// Someone has won by now
@@ -128,7 +142,15 @@ void outputIntro()
 		"If both players end with over " << WINNING_SCORE << "\npoints, player with more points wins.\n" <<
 		"In the event of two players being tied \nwith over " << WINNING_SCORE << " points:\n" <<
 		"Another hand will be played.\n" <<
-		"Hands will then continue to be \nplayed until one player has a higher score\n";
+		"Hands will then continue to be \nplayed until one player has a higher score.\n" <<
+		"When you are prompted for card \\n" <<
+		"locations, it is zero based. That is\n" <<
+		"if you want the first card from your hand\n" <<
+		"you would enter '0'. If choosing multiple cards\n" <<
+		"use one space between numbers.\n" <<
+		"The first letter or number is the rank\n" <<
+		"and after the dash is the suit of the card\n" <<
+		"H = Hearts, S = Spades, D = Diamonds, C = Clubs\n";
 }
 
 void outputEnding(Player& player, Computer& comp)
@@ -140,7 +162,7 @@ void outputEnding(Player& player, Computer& comp)
 		cout << "\nSorry, " << comp.GetName() << " defeated you!";
 
 	// Thanks to the players
-	cout << "\n\nI hope you enjoyed my program." <<
+	cout << "\n\nI hope you enjoyed my game!" <<
 		"\nFeedback please to: ach5306@psu.edu\n\n";
 }
 
@@ -163,7 +185,6 @@ void gamePlay(Player& user, Computer& comp, Cards& deck, int count)
 {
 	if (count%2==0)	// User's turn
 	{
-		cout << "Your hand:\n";
 		user.DisplayHand();
 		
 		// Show the player the melded cards
@@ -172,35 +193,36 @@ void gamePlay(Player& user, Computer& comp, Cards& deck, int count)
 
 		// First must choose cards to pick up
 		int choice = user.WhatDeckToPickFrom(deck,comp.ReturnVectorOfMyMeldedCards());
+
 		if (choice != PICK_FROM_DECK)	// Picking from the pick up pile
 		{
 			InsertPickFromPile(user,comp,deck,choice,count);
-
-			// Force them to meld right now!
-			vector<int> locationsOfCardsIWillMeld = CardsToMeld(user,comp,count);
 			
 			// Populate the players newly melded cards
-			user.PopulateMeldedCards(locationsOfCardsIWillMeld);
+			user.PopulateMeldedCards(CardsToMeld(user,comp,count));
 
 		} else {	// Picking up from the top of the deck
 			user.InsertIntoHand(deck.ReturnCard(deck.GetDeckSize()-1));
 			deck.PopOffCard();
 		}
-
-		cout << "Your updated hand:\n";
-		user.DisplayHand();
-
-		user.DisplayMeldedCards();
-		comp.DisplayMeldedCards();
+		
+		if (choice == PICK_FROM_DECK)
+			user.DisplayHand();
 		
 		// This populates the users melded cards with a vector of cards that they are allowed to meld
 		user.PopulateMeldedCards(user.SecondTimeMeld(deck,comp.ReturnVectorOfMyMeldedCards()));
 		
+		cout << "\n";
+		user.DisplayHand();
+
 		// Finally, must discard a card
-		discardCard(user,comp,deck,user.WhatCardToDiscard(deck),count);
+		if(user.GetHandSize() > 0)
+			discardCard(user,comp,deck,user.WhatCardToDiscard(deck),count);
 
 	} else			// Computer's turn
 	{
+		cout << "Comp's turn!";
+		/*
 		// First must choose cards to pick up
 		int choice = comp.WhatDeckToPickFrom(deck);
 		if (choice != PICK_FROM_DECK)	// Picking from the pick up pile
@@ -222,6 +244,7 @@ void gamePlay(Player& user, Computer& comp, Cards& deck, int count)
 
 		// Finally, must discard a card
 		discardCard(user,comp,deck,comp.WhatCardToDiscard(deck),count);
+		*/
 	}
 
 }
@@ -246,7 +269,7 @@ void InsertPickFromPile(Player& user, Computer& comp, Cards& deck, int choice, i
 		for (int i = deck.GetPickFromPileSize()-1; i >= choice; i--)
 		{
 			user.InsertIntoHand(deck.GetPickFromPileCard(i));
-			deck.PopOffCard();
+			deck.PopPickFromPileCard();
 		}
 	} else				// Computer is discarding a card
 	{
@@ -264,13 +287,27 @@ vector<int> CardsToMeld(Player& user, Computer& comp, int count)
 	if(count%2==0)	// the player is up
 	{
 		vector<int> cardsIWillMeld;
-		cout << "Enter the locations from your hand of the cards that you wish to meld (terminating with -1): ";
-		while (cin.peek() != -1)
+		cout << "\n";
+		user.DisplayHand();
+
+		int location = 0;
+
+		cout << "Enter the locations from your hand of the \ncards that you wish to meld (terminating with -1), \nin decreasing location order: ";
+		while (location != -1)
 		{
-			int location;
 			cin >> location;
-			cardsIWillMeld.push_back(location);
+			if (location != -1)
+				cardsIWillMeld.push_back(location);
 		}
+
 		return cardsIWillMeld;
 	}
+}
+
+void ScoreOutput(Player& user, Computer& comp, int count)
+{
+	cout << "\nAfter " << count << " rounds\n" <<		
+		"Your current score: " << user.GetScore() << "\n" <<
+		comp.GetName() << "'s current score: " << comp.GetScore() << "\n" <<
+		"And the game continues...\n\n";
 }

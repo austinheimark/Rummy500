@@ -22,7 +22,7 @@ int Computer::WhatDeckToPickFrom(Cards deck) const
 	return PICK_FROM_DECK;
 }
 
-int Player::WhatCardToDiscard (Cards deck) const
+int Computer::WhatCardToDiscard (Cards deck) const
 {
 	int cardToDiscard;
 
@@ -34,4 +34,12 @@ int Player::WhatCardToDiscard (Cards deck) const
 vector<string> Computer::ReturnVectorOfMyMeldedCards () const
 {
 	return MeldedCards;
+}
+
+void Computer::DisplayMeldedCards () const
+{
+	cout << Name << "'s melded cards: \n";
+	for (int i = 0; i < MeldedCards.size(); i++)
+		cout << Hand[i] << " ";
+	cout << "\n\n";
 }

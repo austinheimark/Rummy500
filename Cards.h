@@ -20,7 +20,7 @@ public:
 	// Returns the card in the deck at number
 	string ReturnCard(int number) const;
 
-	// Pops a card off of the vector
+	// Pops a card off of the top of the deck
 	void PopOffCard();
 
 	// Returns the size of the deck
@@ -37,6 +37,9 @@ public:
 
 	// Inserts card at the end of the pick from pile
 	void InsertIntoPickFromPile(string card);
+
+	// Pops the top card off of the pick up pile
+	void PopPickFromPileCard();
 
 private:
 	vector<string> Deck;

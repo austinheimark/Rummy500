@@ -19,11 +19,14 @@ public:
 	}
 
 	// Overriding of the same function from Player class
-	int WhatDeckToPickFrom(Cards deck) const;
+	virtual int WhatDeckToPickFrom(Cards deck) const;
 
 	// Overriding of the same function from Player class
-	int WhatCardToDiscard (Cards deck) const;
+	virtual int WhatCardToDiscard (Cards deck) const;
 
 	vector<string> ReturnVectorOfMyMeldedCards () const;
+
+	virtual void DisplayMeldedCards () const;
+
 
 };

@@ -89,6 +89,7 @@ void Cards::DisplayAvailableCards() const
 {
 	for (int i = 0; i < PickFromPile.size(); i++)
 		cout << PickFromPile[i] << " ";
+	cout << "\n\n";
 }
 
 string Cards::ReturnCard(int number) const
@@ -127,4 +128,9 @@ string Cards::GetPickFromPileCard(int number) const
 void Cards::InsertIntoPickFromPile(string card)
 {
 	PickFromPile.push_back(card);
+}
+
+void Cards::PopPickFromPileCard()
+{
+	PickFromPile.pop_back();
 }

@@ -65,20 +65,22 @@ void Player::InsertIntoHand(string card)
 
 void Player::DisplayHand() const
 {
+	cout << "Your hand:\n";
 	for (int i = 0; i < Hand.size(); i++)
 		cout << Hand[i] << " ";
-	cout << endl;
+	cout << "\n\n";
 }
 
 int Player::WhatDeckToPickFrom(Cards deck, vector<string> computersMeldedCards) const
 {	
 	int choice;
-	cout << "What deck would you like to pick up from (1 == pick up pile, -1 = not pick up pile)? ";
+	cout << "Would you like to pick up from the pick up pile (1 = YES)? ";
 	cin >> choice;
 
 	if (choice == 1)	// They want to use cards from the pick up pile to meld but must check to see if it is possible!
 	{
-		cout << "Realize that you are only picking one set of cards to meld...\n\n";
+		cout << "\nRealize that you are only picking one set of cards to meld...\n\n";
+		
 		// Define a vector of the cards the player wants to meld
 		vector<string> cardsIWantToUseToMeld;
 		int firstLocationFromDeck;
@@ -86,26 +88,30 @@ int Player::WhatDeckToPickFrom(Cards deck, vector<string> computersMeldedCards) 
 		cout << "What is the bottom card location you wish to pick up from the deck? ";
 		cin >> firstLocationFromDeck;
 
+		/*
 		cardsIWantToUseToMeld.push_back(deck.ReturnCard(firstLocationFromDeck));
+		
+		int location = 0;
 
 		// Populate an array of cards that the player wants to meld 
-		cout << "What cards from your hand will you use to meld (Terminate your entries with a -1)? ";
-		while (cin.peek() != -1)
+		cout << "\nWhat cards from your hand will you use \nto meld (Terminate your entries with a -1)? ";
+		while (location != -1)
 		{
-			int location;
 			cin >> location;
-			cardsIWantToUseToMeld.push_back(Hand[location]);
+			if (location != -1)
+				cardsIWantToUseToMeld.push_back(Hand[location]);
 		}
-		
-		cout << "What cards from your opponents melded cards will you use to meld  (Terminate your entries with a -1)? ";
-		while (cin.peek() != -1)
+				
+		location = 0;
+		cout << "\nWhat cards from your opponents melded cards will you use to meld  (Terminate your entries with a -1)? ";
+		while (location != -1)
 		{
-			int location;
 			cin >> location;
-			cardsIWantToUseToMeld.push_back(computersMeldedCards[location]);
+			if (location != -1)
+				cardsIWantToUseToMeld.push_back(computersMeldedCards[location]);
 		}
-
-		if (TestIfCanMeld(deck,cardsIWantToUseToMeld) == -1)
+		*/
+		if (firstLocationFromDeck == -1  /*(TestIfCanMeld(deck,cardsIWantToUseToMeld) == -1)*/)
 			return PICK_FROM_DECK;
 		else
 			return firstLocationFromDeck;		// Must return the location that they want to initially pick from 
@@ -119,14 +125,14 @@ int Player::WhatDeckToPickFrom(Cards deck, vector<string> computersMeldedCards) 
 int Player::TestIfCanMeld (Cards& deck, vector<string> checkTheseCards) const
 {
 	// Must write the algorithm to determine if the supplied vector of strings are meldable
-
+	return 0;
 }
 
 int Player::WhatCardToDiscard (Cards deck) const
 {
 	int cardToDiscard;
 
-	cout << "Which card would you like to discard? ";
+	cout << "\nWhich card would you like to discard? ";
 	cin >> cardToDiscard;
 
 	return cardToDiscard;
@@ -195,9 +201,9 @@ void Player::PopCard (int number)
 
 void Player::DisplayMeldedCards () const
 {
-	cout << Name << "'s Melded Cards: \n";
-	for (int i = 0; i < Hand.size(); i++)
-		cout << Hand[i] << " ";
+	cout << "Your melded cards: \n";
+	for (int i = 0; i < MeldedCards.size(); i++)
+		cout << MeldedCards[i] << " ";
 	cout << "\n\n";
 }
 
@@ -206,16 +212,19 @@ void Player::PopulateMeldedCards (vector<int> CardSpotsIWillMeld)
 	// Want to populate 
 	for(int i = 0; i < CardSpotsIWillMeld.size(); i++)
 	{
-		MeldedCards.push_back(Hand[CardSpotsIWillMeld[i]]);	
-		PopCard(CardSpotsIWillMeld[i]);
+		int locale = CardSpotsIWillMeld[i];
+		string card = ReturnCard(locale);
+		MeldedCards.push_back(card);	
+		PopCard(locale);
 	}
+	MeldedCards.push_back("\n");
 }
 
 vector<int> Player::SecondTimeMeld (Cards& deck, vector<string> otherPlayersCards) const
 {
 	// Then must determine if they can meld cards after picking up or not
 	int answer;
-	cout << "Would you like to meld (1=yes)? ";
+	cout << "\nWould you like to meld (1 = YES)? ";
 	cin >> answer;
 	
 	vector<int> cardsToMeld;
@@ -225,7 +234,7 @@ vector<int> Player::SecondTimeMeld (Cards& deck, vector<string> otherPlayersCard
 		vector<string> cardsToTest;
 		vector<int> listOfLocationsOfMyCardsIWillMeld;
 		
-		cout << "Which cards from your hand do you want to meld (terminate with -1)? ";
+		cout << "\nWhich cards from your hand do you want to meld (terminate with -1)? ";
 		while (cin.peek() != -1)
 		{
 			int location;
@@ -249,8 +258,21 @@ vector<int> Player::SecondTimeMeld (Cards& deck, vector<string> otherPlayersCard
 				cardsToMeld.push_back(listOfLocationsOfMyCardsIWillMeld[i]);
 		}
 
-		cout << "Would you like to try to meld another set (1=yes)? ";
+		cout << "Would you like to try to meld another set (1 = YES)? ";
 		cin >> answer;
 	}
 	return cardsToMeld;
+}
+
+void Player::ClearHandAndMeldedCards()
+{
+	for (int i = 0; i < Hand.size(); i++)
+	{
+		Hand.pop_back();
+	}
+
+	for (int i = 0; i < MeldedCards.size(); i++)
+	{
+		MeldedCards.pop_back();
+	}
 }

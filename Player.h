@@ -72,6 +72,9 @@ public:
 	// Enters this method because the player wants to meld cards
 	virtual vector<int> SecondTimeMeld (Cards& deck, vector<string> otherPlayersCards) const;
 
+	// Call this function after each hand, need to reset the cards you have to 0!
+	virtual void ClearHandAndMeldedCards();
+
 protected:
 	string Name;	// Player name
 	int Score;		// Player score
