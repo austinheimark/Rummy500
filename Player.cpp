@@ -5,6 +5,8 @@
 
 #define PICK_FROM_DECK -1
 #define NOT_POSSIBLE -1
+#define YES 1
+#define TERMINATE_NUMBER -1
 
 Player::Player(string name, int score)
 {
@@ -74,10 +76,10 @@ void Player::DisplayHand() const
 int Player::WhatDeckToPickFrom(Cards deck, vector<string> computersMeldedCards) const
 {	
 	int choice;
-	cout << "Would you like to pick up from the pick up pile (1 = YES)? ";
+	cout << "Would you like to pick up from the pick up pile (" << YES << " = YES)? ";
 	cin >> choice;
 
-	if (choice == 1)	// They want to use cards from the pick up pile to meld but must check to see if it is possible!
+	if (choice == YES)	// They want to use cards from the pick up pile to meld but must check to see if it is possible!
 	{
 		cout << "\nRealize that you are only picking one set of cards to meld...\n\n";
 		
@@ -184,9 +186,9 @@ bool Player::CompareCardsOnPickFromPile (Cards deck, int d, int p) const
 	return false;
 }
 
-void Player::OrganizeHand () const
+void Player::OrganizeHand()
 {
-	
+	sort(Hand.begin(),Hand.end());
 }
 
 string Player::ReturnCard (int number) const
@@ -203,7 +205,11 @@ void Player::DisplayMeldedCards () const
 {
 	cout << "Your melded cards: \n";
 	for (int i = 0; i < MeldedCards.size(); i++)
-		cout << MeldedCards[i] << " ";
+	{
+		cout << MeldedCards[i];
+		if (i < MeldedCards.size() - 1)
+			cout << " ";
+	}
 	cout << "\n\n";
 }
 
@@ -217,25 +223,27 @@ void Player::PopulateMeldedCards (vector<int> CardSpotsIWillMeld)
 		MeldedCards.push_back(card);	
 		PopCard(locale);
 	}
+	// Then sorts the melded cards!
 	MeldedCards.push_back("\n");
+	sort(MeldedCards.begin(),MeldedCards.end());
 }
 
 vector<int> Player::SecondTimeMeld (Cards& deck, vector<string> otherPlayersCards) const
 {
 	// Then must determine if they can meld cards after picking up or not
 	int answer;
-	cout << "\nWould you like to meld (1 = YES)? ";
+	cout << "Would you like to meld (" << YES << " = YES)? ";
 	cin >> answer;
 	
 	vector<int> cardsToMeld;
 
-	while (answer == 1)
+	if (answer == 1)
 	{
 		vector<string> cardsToTest;
 		vector<int> listOfLocationsOfMyCardsIWillMeld;
 		
-		cout << "\nWhich cards from your hand do you want to meld (terminate with -1)? ";
-		while (cin.peek() != -1)
+		cout << "\nWhich cards from your hand do you want to meld (terminate with " << TERMINATE_NUMBER << ")? ";
+		while (cin.peek() != TERMINATE_NUMBER)
 		{
 			int location;
 			cin >> location;
@@ -243,8 +251,8 @@ vector<int> Player::SecondTimeMeld (Cards& deck, vector<string> otherPlayersCard
 			listOfLocationsOfMyCardsIWillMeld.push_back(location);
 		}
 
-		cout << "What cards from your opponents melded card pile will you meld with (terminate with -1)?";
-		while (cin.peek() != -1)
+		cout << "What cards from your opponents melded card pile will you meld with (terminate with " << TERMINATE_NUMBER << ")?";
+		while (cin.peek() != TERMINATE_NUMBER)
 		{
 			int location;
 			cin >> location;
@@ -252,13 +260,13 @@ vector<int> Player::SecondTimeMeld (Cards& deck, vector<string> otherPlayersCard
 		}
 
 		int result = TestIfCanMeld(deck,cardsToTest);
-		if (result != -1)
+		if (result != TERMINATE_NUMBER)
 		{
 			for (int i = 0; i < listOfLocationsOfMyCardsIWillMeld.size(); i++)
 				cardsToMeld.push_back(listOfLocationsOfMyCardsIWillMeld[i]);
 		}
 
-		cout << "Would you like to try to meld another set (1 = YES)? ";
+		cout << "Would you like to try to meld another set (" << YES << " = YES)? ";
 		cin >> answer;
 	}
 	return cardsToMeld;

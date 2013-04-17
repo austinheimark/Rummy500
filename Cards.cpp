@@ -8,6 +8,11 @@
 #define DECK_SIZE 52
 #define CARDS_PER_PLAYER 7
 
+enum CardTypes
+{
+
+};
+
 void Cards::ShuffleDeck()
 {
 	srand(time(NULL));

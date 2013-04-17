@@ -12,12 +12,13 @@
 #define WINNING_SCORE 500
 #define TWO_THROUGH_NINE_POINTS 5
 #define TEN_THROUGH_KING_POINTS 10
-#define ACE_HIGH_POINTS 15
-#define ACE_LOW_POINTS 5
+#define ACE_POINTS 15
 #define CARDS_DEALT 11
 #define DECK_SIZE 52
 #define PICK_FROM_DECK -1
 #define NOT_POSSIBLE -1
+#define EMPTY 0
+#define TERMINATE_NUMBER -1
 
 using namespace std;
 
@@ -67,11 +68,11 @@ void main ()
 	Computer comp(name);
 	cout << "\n";
 
-	unsigned int count = 0;
-	unsigned int roundCount = 0;
-	//bool the = 1;
+	unsigned int count = EMPTY;
+	unsigned int roundCount = EMPTY;
+
 	// Game continues as long as neither player has over 500 points
-	while ( /*the && */(user.GetScore() < WINNING_SCORE) && (comp.GetScore() < WINNING_SCORE) )
+	while ( (user.GetScore() < WINNING_SCORE) && (comp.GetScore() < WINNING_SCORE) )
 	{
 		// Output scores
 		ScoreOutput(user,comp,roundCount);
@@ -91,7 +92,7 @@ void main ()
 		count = 0;
 
 		// Commence the game, game continues as long as both players have cards
-		while( (user.GetHandSize() > 0) && (comp.GetHandSize() > 0) && (deck.GetDeckSize() > 0) )
+		while( (user.GetHandSize() > EMPTY) && (comp.GetHandSize() > EMPTY) && (deck.GetDeckSize() > EMPTY) )
 		{
 			cout << "Current pick from pile:\n";		// X represents the top of the deck
 			deck.DisplayAvailableCards();		// Show the player's what they are working with
@@ -106,7 +107,6 @@ void main ()
 		// Calculate scores
 		user.CalculateScore();
 		comp.CalculateScore();
-		//the = 0;
 	}
 
 	// Someone has won by now
@@ -136,8 +136,7 @@ void outputIntro()
 		"Point per card are as follows:\n" << 
 		"2 ... 9 --> " << TWO_THROUGH_NINE_POINTS << " points\n" <<
 		"10 ... King --> " << TEN_THROUGH_KING_POINTS << " points\n" <<
-		"Ace high (ex: Queen,King,Ace\n of clubs, ex: 3 Aces) --> " << ACE_HIGH_POINTS << " points\n" <<
-		"Ace low (ex: Ace,2,3 of hearts) --> " << ACE_LOW_POINTS << " points\n" <<
+		"Ace --> " << ACE_POINTS << ". " <<
 		"New hands keep being dealt \nuntil a player has over " << WINNING_SCORE << " points\n" <<
 		"If both players end with over " << WINNING_SCORE << "\npoints, player with more points wins.\n" <<
 		"In the event of two players being tied \nwith over " << WINNING_SCORE << " points:\n" <<
@@ -150,7 +149,9 @@ void outputIntro()
 		"use one space between numbers.\n" <<
 		"The first letter or number is the rank\n" <<
 		"and after the dash is the suit of the card\n" <<
-		"H = Hearts, S = Spades, D = Diamonds, C = Clubs\n";
+		"H = Hearts, S = Spades, D = Diamonds, C = Clubs.\n" <<
+		"Please not that the face cards will not be sorted in your hand,\n" <<
+		"However, the non face cards will be sorted!\n";
 }
 
 void outputEnding(Player& player, Computer& comp)
@@ -183,8 +184,10 @@ void dealDeck(Player& user, Computer& comp, Cards& deck)
 
 void gamePlay(Player& user, Computer& comp, Cards& deck, int count)
 {
-	if (count%2==0)	// User's turn
+	// Check if it is an even or odd number
+	if (count%2==0)	// User's turn since count is an even number
 	{
+		user.OrganizeHand();
 		user.DisplayHand();
 		
 		// Show the player the melded cards
@@ -206,17 +209,26 @@ void gamePlay(Player& user, Computer& comp, Cards& deck, int count)
 			deck.PopOffCard();
 		}
 		
-		if (choice == PICK_FROM_DECK)
+		if (choice == PICK_FROM_DECK && user.GetHandSize() > EMPTY)
+		{
+			cout << "\n";
+			user.OrganizeHand();
 			user.DisplayHand();
-		
+		}
 		// This populates the users melded cards with a vector of cards that they are allowed to meld
-		user.PopulateMeldedCards(user.SecondTimeMeld(deck,comp.ReturnVectorOfMyMeldedCards()));
+		if (user.GetHandSize() > EMPTY)
+			user.PopulateMeldedCards(user.SecondTimeMeld(deck,comp.ReturnVectorOfMyMeldedCards()));
 		
 		cout << "\n";
-		user.DisplayHand();
+
+		if (user.GetHandSize() > EMPTY)
+		{
+			user.OrganizeHand();
+			user.DisplayHand();
+		}
 
 		// Finally, must discard a card
-		if(user.GetHandSize() > 0)
+		if(user.GetHandSize() > EMPTY)
 			discardCard(user,comp,deck,user.WhatCardToDiscard(deck),count);
 
 	} else			// Computer's turn
@@ -292,11 +304,11 @@ vector<int> CardsToMeld(Player& user, Computer& comp, int count)
 
 		int location = 0;
 
-		cout << "Enter the locations from your hand of the \ncards that you wish to meld (terminating with -1), \nin decreasing location order: ";
-		while (location != -1)
+		cout << "Enter the locations from your hand of the \ncards that you wish to meld (terminating with" <<  TERMINATE_NUMBER << "), \nin decreasing location order: ";
+		while (location != TERMINATE_NUMBER)
 		{
 			cin >> location;
-			if (location != -1)
+			if (location != TERMINATE_NUMBER)
 				cardsIWillMeld.push_back(location);
 		}
 

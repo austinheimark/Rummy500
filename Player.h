@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <algorithm>
 #include "Cards.h"
 
 using namespace std;
@@ -54,8 +55,8 @@ public:
 	// Determines what card the player will discard
 	virtual int WhatCardToDiscard (Cards deck) const;
 
-	// Group the players cards together to make the hand easier to view
-	virtual void OrganizeHand () const;
+	// Sorts the players hand
+	void OrganizeHand();
 
 	// Returns the card at this location
 	virtual string ReturnCard (int number) const;
@@ -66,7 +67,7 @@ public:
 	// Display the melded cards
 	virtual void DisplayMeldedCards () const;
 
-	// Populates melded cards
+	// Populates melded cards and organizes them!
 	virtual void PopulateMeldedCards (vector<int> CardSpotsIWillMeld);
 
 	// Enters this method because the player wants to meld cards
