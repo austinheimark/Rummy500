@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <stdlib.h>
 #include "Cards.h"
 
 using namespace std;
@@ -41,11 +42,7 @@ public:
 	virtual void DisplayHand() const;
 
 	// Determine what deck the player will pick from 
-	virtual int WhatDeckToPickFrom(Cards deck, vector<string> computersMeldedCards) const;
-
-	// Returns true if the two card number d from the deck's pick from
-	// pile is the same as card p from the player's hand
-	virtual bool CompareCardsOnPickFromPile (Cards deck,int d,int p) const;
+	virtual int WhatDeckToPickFrom(Cards deck) const;
 
 	// Start checking from number
 	// If can meld, return the number card that can be melded
@@ -71,7 +68,7 @@ public:
 	virtual void PopulateMeldedCards (vector<int> CardSpotsIWillMeld);
 
 	// Enters this method because the player wants to meld cards
-	virtual vector<int> SecondTimeMeld (Cards& deck, vector<string> otherPlayersCards) const;
+	virtual vector<int> SecondTimeMeld (Cards& deck) const;
 
 	// Call this function after each hand, need to reset the cards you have to 0!
 	virtual void ClearHandAndMeldedCards();

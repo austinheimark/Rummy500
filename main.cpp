@@ -19,6 +19,8 @@
 #define NOT_POSSIBLE -1
 #define EMPTY 0
 #define TERMINATE_NUMBER -1
+#define RANK_OFFSET 2
+#define EVEN_ODD 2
 
 using namespace std;
 
@@ -45,7 +47,7 @@ void discardCard(Player& user, Computer& comp, Cards& deck, int cardSpot, int co
 void InsertPickFromPile(Player& user, Computer& comp, Cards& deck, int choice, int count);
 
 // Populates a vector of the cards that the player will meld from their own hand
-vector<int> CardsToMeld(Player& user, Computer& comp, int count);
+vector<int> CardsToMeld(Player& user);
 
 // Outputs the scores of each player after how many rounds
 void ScoreOutput(Player& user, Computer& comp, int count);
@@ -71,7 +73,7 @@ void main ()
 	unsigned int count = EMPTY;
 	unsigned int roundCount = EMPTY;
 
-	// Game continues as long as neither player has over 500 points
+	// Game continues as long as neither player has over WINNING_SCORE points
 	while ( (user.GetScore() < WINNING_SCORE) && (comp.GetScore() < WINNING_SCORE) )
 	{
 		// Output scores
@@ -79,6 +81,7 @@ void main ()
 
 		// Initialize and shuffle up the deck
 		Cards deck;
+		deck.InitializeDeck();
 		deck.ShuffleDeck();
 
 		// Must clear up both the players and computers hands and melded card piles
@@ -129,14 +132,14 @@ void outputIntro()
 		"User (you) goes first; this alternates each hand.\n" <<
 		"Players earn points by melding \ncards from their hand into the meld area.\n" <<
 		"Players may meld a set of \ncards once they have at least 3 of a kind\n" <<
-		"(ex: 3 Kings) or 3 in a row \nof the same suit (ex: 4,5,6 of spades).\n" <<
+		"(ex: 3 " << Rank(5) << "s) or 3 in a row \nof the same suit (ex: 4,5,6 of spades).\n" <<
 		"Each turns starts with picking \nup a card, and ends by discarding a card.\n" <<
 		"The hand continues until \none player has used all of their cards.\n" <<
 		"Points are tallied at the end of each hand.\n" <<
 		"Point per card are as follows:\n" << 
-		"2 ... 9 --> " << TWO_THROUGH_NINE_POINTS << " points\n" <<
-		"10 ... King --> " << TEN_THROUGH_KING_POINTS << " points\n" <<
-		"Ace --> " << ACE_POINTS << ". " <<
+		Rank(0) + RANK_OFFSET << " ... " << Rank(8) + RANK_OFFSET << " --> " << TWO_THROUGH_NINE_POINTS << " points\n" <<
+		Rank(9) + RANK_OFFSET << " ... " << Rank(11) + RANK_OFFSET << " --> " << TEN_THROUGH_KING_POINTS << " points\n" <<
+		Rank(12) + RANK_OFFSET << " --> " << ACE_POINTS << " points. " <<
 		"New hands keep being dealt \nuntil a player has over " << WINNING_SCORE << " points\n" <<
 		"If both players end with over " << WINNING_SCORE << "\npoints, player with more points wins.\n" <<
 		"In the event of two players being tied \nwith over " << WINNING_SCORE << " points:\n" <<
@@ -170,7 +173,7 @@ void outputEnding(Player& player, Computer& comp)
 void dealDeck(Player& user, Computer& comp, Cards& deck)
 {
 	int i = 0;
-	while (i < 2*CARDS_DEALT)
+	while (i < EVEN_ODD*CARDS_DEALT)
 	{
 		user.InsertIntoHand(deck.ReturnCard(i));
 		deck.PopOffCard();
@@ -185,7 +188,7 @@ void dealDeck(Player& user, Computer& comp, Cards& deck)
 void gamePlay(Player& user, Computer& comp, Cards& deck, int count)
 {
 	// Check if it is an even or odd number
-	if (count%2==0)	// User's turn since count is an even number
+	if (count%EVEN_ODD==0)	// User's turn since count is an even number
 	{
 		user.OrganizeHand();
 		user.DisplayHand();
@@ -195,14 +198,14 @@ void gamePlay(Player& user, Computer& comp, Cards& deck, int count)
 		comp.DisplayMeldedCards();
 
 		// First must choose cards to pick up
-		int choice = user.WhatDeckToPickFrom(deck,comp.ReturnVectorOfMyMeldedCards());
+		int choice = user.WhatDeckToPickFrom(deck);
 
 		if (choice != PICK_FROM_DECK)	// Picking from the pick up pile
 		{
 			InsertPickFromPile(user,comp,deck,choice,count);
 			
 			// Populate the players newly melded cards
-			user.PopulateMeldedCards(CardsToMeld(user,comp,count));
+			user.PopulateMeldedCards(CardsToMeld(user));
 
 		} else {	// Picking up from the top of the deck
 			user.InsertIntoHand(deck.ReturnCard(deck.GetDeckSize()-1));
@@ -217,53 +220,58 @@ void gamePlay(Player& user, Computer& comp, Cards& deck, int count)
 		}
 		// This populates the users melded cards with a vector of cards that they are allowed to meld
 		if (user.GetHandSize() > EMPTY)
-			user.PopulateMeldedCards(user.SecondTimeMeld(deck,comp.ReturnVectorOfMyMeldedCards()));
-		
-		cout << "\n";
-
-		if (user.GetHandSize() > EMPTY)
 		{
-			user.OrganizeHand();
-			user.DisplayHand();
+			user.PopulateMeldedCards(user.SecondTimeMeld(deck,comp.ReturnVectorOfMyMeldedCards()));
+			if (user.GetHandSize() > EMPTY)
+			{
+				user.OrganizeHand();
+				user.DisplayHand();
+			}
 		}
+		cout << "\n";
 
 		// Finally, must discard a card
 		if(user.GetHandSize() > EMPTY)
 			discardCard(user,comp,deck,user.WhatCardToDiscard(deck),count);
 
+		cout << "\n";
 	} else			// Computer's turn
 	{
-		cout << "Comp's turn!";
-		/*
+		cout << "Comp's turn!\n";
+		
+		comp.OrganizeHand();
+
 		// First must choose cards to pick up
 		int choice = comp.WhatDeckToPickFrom(deck);
+
 		if (choice != PICK_FROM_DECK)	// Picking from the pick up pile
 		{
 			InsertPickFromPile(user,comp,deck,choice,count);
+			
+			// Populate the players newly melded cards
+			comp.PopulateMeldedCards(comp.FirstTimeMeld(deck));
+
 		} else {	// Picking up from the top of the deck
 			comp.InsertIntoHand(deck.ReturnCard(deck.GetDeckSize()-1));
 			deck.PopOffCard();
 		}
 
-		int number = 0;
-		// Then must determine if you can meld cards or not
-		while(comp.TestIfCanMeld(deck,number) != NOT_POSSIBLE)
-		{
-			//Since they can meld, if they want to let them!
-			
-			number = comp.TestIfCanMeld(deck,number);
-		}
+		// This populates the computers melded cards with a vector of cards they melded
+		if (comp.GetHandSize() > EMPTY)
+			comp.PopulateMeldedCards(comp.SecondTimeMeld(deck));
 
-		// Finally, must discard a card
-		discardCard(user,comp,deck,comp.WhatCardToDiscard(deck),count);
-		*/
+		// Finally the computer must discard a card
+		if(comp.GetHandSize() > EMPTY)
+			discardCard(user,comp,deck,user.WhatCardToDiscard(deck),count);
+
+		cout << "\n";
 	}
 
 }
 
 void discardCard (Player& user, Computer& comp, Cards& deck, int cardSpot, int count)
 {
-	if (count%2==0)		// User is discarding a card
+	if (count%EVEN_ODD==0)		// User is discarding a card
 	{
 		deck.InsertIntoPickFromPile(user.ReturnCard(cardSpot));	// First insert the card into the pick from pile
 		user.PopCard(cardSpot);									// Then pop the card out of the user's hand
@@ -276,7 +284,7 @@ void discardCard (Player& user, Computer& comp, Cards& deck, int cardSpot, int c
 
 void InsertPickFromPile(Player& user, Computer& comp, Cards& deck, int choice, int count)
 {
-	if (count%2==0)		// User is inserting from pick from pile
+	if (count%EVEN_ODD==0)		// User is inserting from pick from pile
 	{
 		for (int i = deck.GetPickFromPileSize()-1; i >= choice; i--)
 		{
@@ -294,26 +302,23 @@ void InsertPickFromPile(Player& user, Computer& comp, Cards& deck, int choice, i
 
 }
 
-vector<int> CardsToMeld(Player& user, Computer& comp, int count)
+vector<int> CardsToMeld(Player& user)
 {
-	if(count%2==0)	// the player is up
+	vector<int> cardsIWillMeld;
+	cout << "\n";
+	user.DisplayHand();
+		
+	int location = 0;
+
+	cout << "Enter the locations from your hand of the \ncards that you wish to meld (terminating with" <<  TERMINATE_NUMBER << "), \nin decreasing location order:\n";
+	while (location != TERMINATE_NUMBER)
 	{
-		vector<int> cardsIWillMeld;
-		cout << "\n";
-		user.DisplayHand();
-
-		int location = 0;
-
-		cout << "Enter the locations from your hand of the \ncards that you wish to meld (terminating with" <<  TERMINATE_NUMBER << "), \nin decreasing location order: ";
-		while (location != TERMINATE_NUMBER)
-		{
-			cin >> location;
-			if (location != TERMINATE_NUMBER)
-				cardsIWillMeld.push_back(location);
-		}
-
-		return cardsIWillMeld;
+		cin >> location;
+		if (location != TERMINATE_NUMBER)
+			cardsIWillMeld.push_back(location);
 	}
+
+	return cardsIWillMeld;
 }
 
 void ScoreOutput(Player& user, Computer& comp, int count)

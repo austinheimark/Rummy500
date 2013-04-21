@@ -8,10 +8,38 @@
 
 using namespace std;
 
+enum Rank
+{
+	Two, 
+	Three, 
+	Four,
+	Five,
+	Six,
+	Seven,
+	Eight,
+	Nine,
+	Ten,
+	Jack,
+	Queen,
+	King,
+	Ace
+};
+
+enum Suit
+{
+	D,
+	H,
+	S,
+	C
+};
+
 class Cards
 {
 public:
-	// Shuffles and initializes the deck
+	// Initializes the deck with values
+	void InitializeDeck();
+
+	// Shuffles the deck
 	void ShuffleDeck();
 
 	// Displays the cards to choose from

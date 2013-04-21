@@ -2,92 +2,75 @@
 // Written by Austin Heimark
 
 #include "Cards.h"
-#include <stdlib.h> 
-#include <time.h>
+#include <algorithm>
+#include <ctime>
 
 #define DECK_SIZE 52
 #define CARDS_PER_PLAYER 7
+#define NUMBER_OF_RANKS 13
+#define NUMBER_OF_SUITS 4
+#define RANK_OFFSET 2
 
-enum CardTypes
+void Cards::InitializeDeck()
 {
-
-};
-
-void Cards::ShuffleDeck()
-{
-	srand(time(NULL));
-	int A[13][4];
-	while(Deck.size() < DECK_SIZE)
+	for (int r = 0; r < NUMBER_OF_RANKS; r++)
 	{
-		int number = rand() % 13;
-		int suit = rand() % 4;
-
-		if(A[number][suit] != 1)
+		for (int s = 0; s < NUMBER_OF_SUITS; s++)
 		{
 			string card;
-			A[number][suit] = 1;
-			
-			switch(number)
+			Rank cardRank = Rank(r);
+			switch (cardRank)
 			{
-			case(12):
-				card = "A";
+			case(Two):
+			case(Three):
+			case(Four):
+			case(Five):
+			case(Six):
+			case(Seven):
+			case(Eight):
+			case(Nine):
+				card += cardRank + RANK_OFFSET + '0';
 				break;
-			case(11):
-				card = "K";
+			case(Ten):
+				card = "10";
 				break;
-			case(10):
-				card = "Q";
+			case(Jack):
+				card = "11";
 				break;
-			case(9):
-				card = "J";
+			case(Queen):
+				card = "12";
 				break;
-			case(8):
-				card = "T";
+			case(King):
+				card = "13";
 				break;
-			case(7):
-				card = "9";
-				break;
-			case(6):
-				card = "8";
-				break;
-			case(5):
-				card = "7";
-				break;
-			case(4):
-				card = "6";
-				break;
-			case(3):
-				card = "5";
-				break;
-			case(2):
-				card = "4";
-				break;
-			case(1):
-				card = "3";
-				break;
-			case(0):
-				card = "2";
-				break;
+			case(Ace):
+				card = "14";
 			}
-
-			switch(suit)
+			
+			Suit cardSuit = Suit(s);
+			switch (cardSuit)
 			{
-			case(0):
-				card.append("-S");
+			case(D):
+				card.append("-D");
 				break;
-			case(1):
-				card.append("-C");
-				break;
-			case(2):
+			case(H):
 				card.append("-H");
 				break;
-			case(3):
-				card.append("-D");
+			case(S):
+				card.append("-S");
+				break;
+			case(C):
+				card.append("-C");
 			}
-
 			Deck.push_back(card);
 		}
 	}
+}
+
+void Cards::ShuffleDeck()
+{
+	srand ( unsigned ( time(0) ) );
+	random_shuffle(Deck.begin(),Deck.end());
 }
 
 void Cards::DisplayAvailableCards() const
