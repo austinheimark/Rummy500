@@ -78,7 +78,7 @@ public:
 	virtual void PopulateMeldedCards (vector<int>& CardSpotsIWillMeld);
 
 	// Enters this method because the player wants to meld cards
-	virtual vector<int> SecondTimeMeld (Cards& deck) const;
+	virtual vector<int> SecondTimeMeld () const;
 
 	// Call this function after each hand, need to reset the cards you have to 0!
 	virtual void ClearHandAndMeldedCards();

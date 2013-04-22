@@ -163,7 +163,7 @@ void Player::PopulateMeldedCards (vector<int>& CardSpotsIWillMeld)
 	sort(MeldedCards.begin(),MeldedCards.end());
 }
 
-vector<int> Player::SecondTimeMeld (Cards& deck) const
+vector<int> Player::SecondTimeMeld () const
 {
 	// Then must determine if they can meld cards after picking up or not
 	int answer;
@@ -245,7 +245,7 @@ void Player::GamePlay (Cards& deck, vector<string> compsMeldedCards, string& com
 		cout << "\n";
 		DisplayMeldedCards();
 	} else {	// Picking up from the top of the deck
-		InsertIntoHand(deck.ReturnCard(deck.GetDeckSize()-1));
+		InsertIntoHand(deck.TopDeckCard());
 		deck.PopOffCard();
 	}
 		
@@ -258,7 +258,7 @@ void Player::GamePlay (Cards& deck, vector<string> compsMeldedCards, string& com
 	// This populates the users melded cards with a vector of cards that they are allowed to meld
 	if (GetHandSize() > EMPTY)
 	{
-		PopulateMeldedCards(SecondTimeMeld(deck));
+		PopulateMeldedCards(SecondTimeMeld());
 		if (GetHandSize() > EMPTY)
 		{
 			cout << "\n";

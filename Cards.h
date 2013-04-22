@@ -5,6 +5,14 @@
 #include <iostream>
 #include <vector>
 #include <string> 
+#include <algorithm>
+#include <ctime>
+
+#define DECK_SIZE 52
+#define CARDS_PER_PLAYER 7
+#define NUMBER_OF_RANKS 13
+#define NUMBER_OF_SUITS 4
+#define RANK_OFFSET 2
 
 using namespace std;
 
@@ -68,6 +76,9 @@ public:
 
 	// Pops the top card off of the pick up pile
 	void PopPickFromPileCard();
+
+	// Returns the top card from the deck
+	string TopDeckCard () const;
 
 private:
 	vector<string> Deck;

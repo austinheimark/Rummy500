@@ -2,14 +2,6 @@
 // Written by Austin Heimark
 
 #include "Cards.h"
-#include <algorithm>
-#include <ctime>
-
-#define DECK_SIZE 52
-#define CARDS_PER_PLAYER 7
-#define NUMBER_OF_RANKS 13
-#define NUMBER_OF_SUITS 4
-#define RANK_OFFSET 2
 
 void Cards::InitializeDeck()
 {
@@ -75,7 +67,7 @@ void Cards::ShuffleDeck()
 
 void Cards::DisplayAvailableCards() const
 {
-	for (int i = 0; i < PickFromPile.size(); i++)
+	for (unsigned int i = 0; i < PickFromPile.size(); i++)
 		cout << PickFromPile[i] << " ";
 	cout << "\n\n";
 }
@@ -121,4 +113,9 @@ void Cards::InsertIntoPickFromPile(const string& card)
 void Cards::PopPickFromPileCard()
 {
 	PickFromPile.pop_back();
+}
+
+string Cards::TopDeckCard () const
+{
+	return Deck[GetDeckSize()-1];
 }

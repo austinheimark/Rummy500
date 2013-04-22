@@ -1,7 +1,7 @@
 // main.cpp - Rummy 500 test program
 // Written by Austin Heimark
 
-// Line count = 965
+// Line count = 1,048
 
 #include <iostream>
 #include <vector>
@@ -35,7 +35,7 @@ void outputEnding(Player& player, Computer& comp);
 // Inserts a card into players hand, pops card off of the deck
 // then inserts a card into computer's hand and pops a card off
 // the deck. Continues till each player has a full hand
-void dealDeck(Player& player, Computer& comp, Cards& deck);
+void dealDeck(Player& player, Computer& comp, Cards& deck, int count);
 
 // Outputs the scores of each player after how many rounds
 void ScoreOutput(Player& user, Computer& comp, int count);
@@ -76,7 +76,7 @@ void main ()
 		comp.ClearHandAndMeldedCards();
 
 		// Deal the deck
-		dealDeck(user,comp,deck);
+		dealDeck(user,comp,deck,roundCount);
 	
 		// Reset count back to roundCount --> alternate who goes first
 		unsigned int count = roundCount;
@@ -162,19 +162,35 @@ void outputEnding(Player& player, Computer& comp)
 		"\nFeedback please to: ach5306@psu.edu\n\n";
 }
 
-void dealDeck(Player& user, Computer& comp, Cards& deck)
+void dealDeck(Player& user, Computer& comp, Cards& deck, int count)
 {
-	int i = 0;
-	while (i < EVEN_ODD*CARDS_DEALT)
+	if (count % EVEN_ODD == 0)	// Deal to user first
 	{
-		user.InsertIntoHand(deck.ReturnCard(i));
-		deck.PopOffCard();
-		i++;
-		comp.InsertIntoHand(deck.ReturnCard(i));
-		deck.PopOffCard();
-		i++;
+		int i = 0;
+		while (i < EVEN_ODD*CARDS_DEALT)
+		{
+			user.InsertIntoHand(deck.TopDeckCard());
+			deck.PopOffCard();
+			i++;
+			comp.InsertIntoHand(deck.TopDeckCard());
+			deck.PopOffCard();
+			i++;
+		}
+		deck.AdjustPickPile();
+	} else						// Deal to computer first
+	{
+		int j = 0;
+		while (j < EVEN_ODD*CARDS_DEALT)
+		{
+			comp.InsertIntoHand(deck.TopDeckCard());
+			deck.PopOffCard();
+			j++;
+			user.InsertIntoHand(deck.TopDeckCard());
+			deck.PopOffCard();
+			j++;
+		}
+		deck.AdjustPickPile();
 	}
-	deck.AdjustPickPile();
 }
 
 void ScoreOutput(Player& user, Computer& comp, int count)

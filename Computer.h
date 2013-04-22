@@ -35,8 +35,10 @@ public:
 	vector<int> FirstTimeMeld (Cards& deck) const;
 
 	// Enters this method because the player wants to meld cards during the second chance
-	virtual vector<int> SecondTimeMeld (Cards& deck) const;
+	// Will first test to see if it can meld cards that are all of the same rank
+	// If it cannot, then it will test to meld cards of consecuitve rank and the same suit
+	virtual vector<int> SecondTimeMeld () const;
 
 	// Overriding GamePlay from the Player class
-	virtual void GamePlay (Cards& deck, vector<string> compsMeldedCards);
+	virtual void GamePlay (Cards& deck, vector<string> usersMeldedCards);
 };
