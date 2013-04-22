@@ -5,46 +5,42 @@
 
 #define PICK_FROM_DECK -1
 
-int Computer::WhatDeckToPickFrom(Cards deck) const
+int Computer::WhatDeckToPickFrom(Cards& deck) const
 {
-	for (int d = 0; d < deck.GetPickFromPileSize(); d++)
-	{
-		for (int p = 0; p < Hand.size(); p++)
-		{
-			if (CompareCardsOnPickFromPile(deck,d,p))
-			{
-				
-			}
-		}
-	}
+	//for (int d = 0; d < deck.GetPickFromPileSize(); d++)
+	//{
+	//	for (int p = 0; p < Hand.size(); p++)
+	//	{
+	//		if (CompareCardsOnPickFromPile(deck,d,p))
+	//		{
+	//			
+	//		}
+	//	}
+	//}
 
 	// No option
 	return PICK_FROM_DECK;
 }
 
-int Computer::WhatCardToDiscard (Cards deck) const
+int Computer::WhatCardToDiscard (Cards& deck) const
 {
-	int cardToDiscard;
+	// Start by automatically discarding the first card for the computer
+	int cardToDiscard = 0;
 
 	// Must do some calculations to determine which card to discard
 
 	return cardToDiscard;
 }
 
-vector<string> Computer::ReturnVectorOfMyMeldedCards () const
-{
-	return MeldedCards;
-}
-
 void Computer::DisplayMeldedCards () const
 {
 	cout << Name << "'s melded cards: \n";
-	for (int i = 0; i < MeldedCards.size(); i++)
+	for (unsigned int i = 0; i < MeldedCards.size(); i++)
 		cout << Hand[i] << " ";
 	cout << "\n\n";
 }
 
-bool Computer::CompareCardsOnPickFromPile (Cards deck, int d, int p) const
+bool Computer::CompareCardsOnPickFromPile (Cards& deck, const int& d, const int& p) const
 {
 	string card = deck.GetPickFromPileCard(d);
 
@@ -88,4 +84,58 @@ bool Computer::CompareCardsOnPickFromPile (Cards deck, int d, int p) const
 		}
 	}
 	return false;
+}
+
+vector<int> Computer::FirstTimeMeld (Cards& deck) const
+{
+	vector<int> cardsCompWillMeld;
+
+
+
+	return cardsCompWillMeld;
+}
+
+vector<int> Computer::SecondTimeMeld (Cards& deck) const
+{
+	vector<int> cardsCompWillMeld;
+
+
+
+	return cardsCompWillMeld;
+}
+
+void Computer::GamePlay (Cards& deck, vector<string> compsMeldedCards)
+{
+	cout << Name << "'s turn!\n";
+		
+	OrganizeHand();
+
+	// First must choose cards to pick up
+	int choice = WhatDeckToPickFrom(deck);
+
+	if (choice != PICK_FROM_DECK)	// Picking from the pick up pile
+	{
+		InsertFromPickFromPile(deck,choice);
+			
+		// Populate the players newly melded cards
+		PopulateMeldedCards(FirstTimeMeld(deck));
+
+	} else {	// Picking up from the top of the deck
+		InsertIntoHand(deck.ReturnCard(deck.GetDeckSize()-1));
+		deck.PopOffCard();
+	}
+
+	OrganizeHand();
+
+	// This populates the computers melded cards with a vector of cards they melded
+	if (GetHandSize() > EMPTY)
+		PopulateMeldedCards(SecondTimeMeld(deck));
+
+	OrganizeHand();
+
+	// Finally the computer must discard a card
+	if(GetHandSize() > EMPTY)
+		DiscardCard(deck,WhatCardToDiscard(deck));
+
+	cout << "\n";
 }

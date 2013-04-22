@@ -46,7 +46,7 @@ public:
 	void DisplayAvailableCards() const;
 
 	// Returns the card in the deck at number
-	string ReturnCard(int number) const;
+	string ReturnCard(const int& number) const;
 
 	// Pops a card off of the top of the deck
 	void PopOffCard();
@@ -61,10 +61,10 @@ public:
 	void AdjustPickPile();
 
 	// Returns card at number from the pick from pile
-	string GetPickFromPileCard(int number) const;
+	string GetPickFromPileCard(const int& number) const;
 
 	// Inserts card at the end of the pick from pile
-	void InsertIntoPickFromPile(string card);
+	void InsertIntoPickFromPile(const string& card);
 
 	// Pops the top card off of the pick up pile
 	void PopPickFromPileCard();

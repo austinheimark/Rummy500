@@ -19,20 +19,24 @@ public:
 	}
 
 	// Overriding of the same method from Player class
-	virtual int WhatDeckToPickFrom(Cards deck) const;
+	virtual int WhatDeckToPickFrom(Cards& deck) const;
 
 	// Overriding of the same method from Player class
-	virtual int WhatCardToDiscard (Cards deck) const;
-
-	// Retruns a vector of the computer's melded cards
-	vector<string> ReturnVectorOfMyMeldedCards () const;
+	virtual int WhatCardToDiscard (Cards& deck) const;
 
 	// Overriding to display the computer's melded cards
 	virtual void DisplayMeldedCards () const;
 
 	// Returns true if the two card number d from the deck's pick from
 	// pile is the same as card p from the player's hand
-	bool CompareCardsOnPickFromPile (Cards deck,int d,int p) const;
+	bool CompareCardsOnPickFromPile (Cards& deck, const int& d, const int& p) const;
 
+	// Determines if the comp wants to meld initially
 	vector<int> FirstTimeMeld (Cards& deck) const;
+
+	// Enters this method because the player wants to meld cards during the second chance
+	virtual vector<int> SecondTimeMeld (Cards& deck) const;
+
+	// Overriding GamePlay from the Player class
+	virtual void GamePlay (Cards& deck, vector<string> compsMeldedCards);
 };

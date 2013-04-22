@@ -11,6 +11,16 @@
 
 using namespace std;
 
+#define PICK_FROM_DECK -1
+#define NOT_POSSIBLE -1
+#define YES 1
+#define TERMINATE_NUMBER -1
+#define RANK_OFFSET 2
+#define TWO_THROUGH_NINE_PTS 5
+#define TEN_THROUGH_KING_PTS 10
+#define ACE_POINTS 15
+#define EMPTY 0
+
 class Player
 {
 public:
@@ -32,46 +42,62 @@ public:
 	virtual void CalculateScore();
 
 	// Returns the Value of the hand at number
-	virtual string GetHandValue(int number) const;
+	virtual string GetHandValue(const int& number) const;
 
 	// Inserts card into the hand at the end of the handS
-	virtual void InsertIntoHand(string card);
+	virtual void InsertIntoHand(const string& card);
 
 	// Displays the hand
 	// Does not need to be virtual (once done testing)
 	virtual void DisplayHand() const;
 
 	// Determine what deck the player will pick from 
-	virtual int WhatDeckToPickFrom(Cards deck) const;
+	virtual int WhatDeckToPickFrom(Cards& deck) const;
 
 	// Start checking from number
 	// If can meld, return the number card that can be melded
 	// If cannot meld, return NOT_POSSIBLE
-	virtual int TestIfCanMeld (Cards& deck, vector<string> checkTheseCards) const;
+	virtual int TestIfCanMeld (Cards& deck, vector<string>& checkTheseCards) const;
 
 	// Determines what card the player will discard
-	virtual int WhatCardToDiscard (Cards deck) const;
+	virtual int WhatCardToDiscard (Cards& deck) const;
 
 	// Sorts the players hand
 	void OrganizeHand();
 
 	// Returns the card at this location
-	virtual string ReturnCard (int number) const;
+	virtual string ReturnCard (const int& number) const;
 
 	// Pops the card at number from the Hand
-	virtual void PopCard (int number);
+	virtual void PopCard (const int& number);
 
 	// Display the melded cards
 	virtual void DisplayMeldedCards () const;
 
 	// Populates melded cards and organizes them!
-	virtual void PopulateMeldedCards (vector<int> CardSpotsIWillMeld);
+	virtual void PopulateMeldedCards (vector<int>& CardSpotsIWillMeld);
 
 	// Enters this method because the player wants to meld cards
 	virtual vector<int> SecondTimeMeld (Cards& deck) const;
 
 	// Call this function after each hand, need to reset the cards you have to 0!
 	virtual void ClearHandAndMeldedCards();
+
+	// Populates a vector of the cards that the player will meld from their own hand
+	vector<int> CardsToMeld();
+
+	// The main gameplay for the game, iterates through each turn of every hand
+	virtual void GamePlay (Cards& deck, vector<string> compsMeldedCards, string& compsName);
+
+	// Must insert the cards from player's choice all the way up to the end of the pile into the player's hand
+	// Called if the player wants to pick from the pick up pile
+	virtual void InsertFromPickFromPile (Cards& deck, const int& choice);
+
+	// Discards the card in the player's hand at spot cardSpot
+	virtual void DiscardCard (Cards& deck, const int& cardSpot);
+
+	// Retruns a vector of the computer's melded cards
+	virtual vector<string> ReturnVectorOfMyMeldedCards () const;
 
 protected:
 	string Name;	// Player name

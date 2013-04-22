@@ -1,13 +1,15 @@
 // main.cpp - Rummy 500 test program
 // Written by Austin Heimark
 
-// Line count --> 933
+// Line count = 965
 
 #include <iostream>
 #include <vector>
 #include "Player.h"
 #include "Cards.h"
 #include "Computer.h"
+
+using namespace std;
 
 #define WINNING_SCORE 500
 #define TWO_THROUGH_NINE_POINTS 5
@@ -21,8 +23,7 @@
 #define TERMINATE_NUMBER -1
 #define RANK_OFFSET 2
 #define EVEN_ODD 2
-
-using namespace std;
+#define YES 1
 
 // Intro which includes rules for the game
 void outputIntro();
@@ -35,19 +36,6 @@ void outputEnding(Player& player, Computer& comp);
 // then inserts a card into computer's hand and pops a card off
 // the deck. Continues till each player has a full hand
 void dealDeck(Player& player, Computer& comp, Cards& deck);
-
-// The main gameplay for the game, iterates through each turn of every hand
-void gamePlay(Player& player, Computer& comp, Cards& deck, int count);
-
-// Discards the card in the player's hand at spot cardSpot
-void discardCard(Player& user, Computer& comp, Cards& deck, int cardSpot, int count);
-
-// Must insert the cards from player's choice all the way up to the end of the pile into the player's hand
-// Called if the player wants to pick from the pick up pile
-void InsertPickFromPile(Player& user, Computer& comp, Cards& deck, int choice, int count);
-
-// Populates a vector of the cards that the player will meld from their own hand
-vector<int> CardsToMeld(Player& user);
 
 // Outputs the scores of each player after how many rounds
 void ScoreOutput(Player& user, Computer& comp, int count);
@@ -70,7 +58,6 @@ void main ()
 	Computer comp(name);
 	cout << "\n";
 
-	unsigned int count = EMPTY;
 	unsigned int roundCount = EMPTY;
 
 	// Game continues as long as neither player has over WINNING_SCORE points
@@ -90,20 +77,21 @@ void main ()
 
 		// Deal the deck
 		dealDeck(user,comp,deck);
-
-		// Reassure that the count is set back to 0
-		count = 0;
+	
+		// Reset count back to roundCount --> alternate who goes first
+		unsigned int count = roundCount;
 
 		// Commence the game, game continues as long as both players have cards
-		while( (user.GetHandSize() > EMPTY) && (comp.GetHandSize() > EMPTY) && (deck.GetDeckSize() > EMPTY) )
+		while ( (user.GetHandSize() > EMPTY) && (comp.GetHandSize() > EMPTY) && (deck.GetDeckSize() > EMPTY) )
 		{
-			cout << "Current pick from pile:\n";		// X represents the top of the deck
-			deck.DisplayAvailableCards();		// Show the player's what they are working with
+			// Must call gameplay every play through the hand
 			
-			// Must call this every play through the hand
-			gamePlay(user,comp,deck,count);
+			if (count % EVEN_ODD == 0)	// Player is up
+				user.GamePlay(deck,comp.ReturnVectorOfMyMeldedCards(),comp.GetName());
+			else
+				comp.GamePlay(deck,user.ReturnVectorOfMyMeldedCards());
 
-			count+=2;
+			count++;
 		}
 		roundCount++;
 
@@ -154,16 +142,20 @@ void outputIntro()
 		"and after the dash is the suit of the card\n" <<
 		"H = Hearts, S = Spades, D = Diamonds, C = Clubs.\n" <<
 		"Please not that the face cards will not be sorted in your hand,\n" <<
-		"However, the non face cards will be sorted!\n";
+		"However, the non face cards will be sorted!\n" <<
+		"You must meld at least one card when you pick\nit up from the pick up pile\n" <<
+		YES << " means 'Yes' when asked yes/no questions.\nAnything else will be interpreted as a no.\n" <<
+		"When melding cards, always tell which cards you \nwant to meld from your hand in decreasing location order\n" <<
+		"And when telling the computer these meld spots, \nterminate your entries with a " << TERMINATE_NUMBER << ".\n";
 }
 
 void outputEnding(Player& player, Computer& comp)
 {
 	// Whichever player has the higher score wins
 	if ( player.GetScore() >= comp.GetScore() )
-		cout << "\nCongratulations, " << player.GetName() << "! You beat the computer in Rummy 500!";
+		cout << "Congratulations, " << player.GetName() << "! You beat the computer in Rummy 500!";
 	else
-		cout << "\nSorry, " << comp.GetName() << " defeated you!";
+		cout << "Sorry, " << comp.GetName() << " defeated you!";
 
 	// Thanks to the players
 	cout << "\n\nI hope you enjoyed my game!" <<
@@ -185,145 +177,9 @@ void dealDeck(Player& user, Computer& comp, Cards& deck)
 	deck.AdjustPickPile();
 }
 
-void gamePlay(Player& user, Computer& comp, Cards& deck, int count)
-{
-	// Check if it is an even or odd number
-	if (count%EVEN_ODD==0)	// User's turn since count is an even number
-	{
-		user.OrganizeHand();
-		user.DisplayHand();
-		
-		// Show the player the melded cards
-		user.DisplayMeldedCards();
-		comp.DisplayMeldedCards();
-
-		// First must choose cards to pick up
-		int choice = user.WhatDeckToPickFrom(deck);
-
-		if (choice != PICK_FROM_DECK)	// Picking from the pick up pile
-		{
-			InsertPickFromPile(user,comp,deck,choice,count);
-			
-			// Populate the players newly melded cards
-			user.PopulateMeldedCards(CardsToMeld(user));
-
-		} else {	// Picking up from the top of the deck
-			user.InsertIntoHand(deck.ReturnCard(deck.GetDeckSize()-1));
-			deck.PopOffCard();
-		}
-		
-		if (choice == PICK_FROM_DECK && user.GetHandSize() > EMPTY)
-		{
-			cout << "\n";
-			user.OrganizeHand();
-			user.DisplayHand();
-		}
-		// This populates the users melded cards with a vector of cards that they are allowed to meld
-		if (user.GetHandSize() > EMPTY)
-		{
-			user.PopulateMeldedCards(user.SecondTimeMeld(deck,comp.ReturnVectorOfMyMeldedCards()));
-			if (user.GetHandSize() > EMPTY)
-			{
-				user.OrganizeHand();
-				user.DisplayHand();
-			}
-		}
-		cout << "\n";
-
-		// Finally, must discard a card
-		if(user.GetHandSize() > EMPTY)
-			discardCard(user,comp,deck,user.WhatCardToDiscard(deck),count);
-
-		cout << "\n";
-	} else			// Computer's turn
-	{
-		cout << "Comp's turn!\n";
-		
-		comp.OrganizeHand();
-
-		// First must choose cards to pick up
-		int choice = comp.WhatDeckToPickFrom(deck);
-
-		if (choice != PICK_FROM_DECK)	// Picking from the pick up pile
-		{
-			InsertPickFromPile(user,comp,deck,choice,count);
-			
-			// Populate the players newly melded cards
-			comp.PopulateMeldedCards(comp.FirstTimeMeld(deck));
-
-		} else {	// Picking up from the top of the deck
-			comp.InsertIntoHand(deck.ReturnCard(deck.GetDeckSize()-1));
-			deck.PopOffCard();
-		}
-
-		// This populates the computers melded cards with a vector of cards they melded
-		if (comp.GetHandSize() > EMPTY)
-			comp.PopulateMeldedCards(comp.SecondTimeMeld(deck));
-
-		// Finally the computer must discard a card
-		if(comp.GetHandSize() > EMPTY)
-			discardCard(user,comp,deck,user.WhatCardToDiscard(deck),count);
-
-		cout << "\n";
-	}
-
-}
-
-void discardCard (Player& user, Computer& comp, Cards& deck, int cardSpot, int count)
-{
-	if (count%EVEN_ODD==0)		// User is discarding a card
-	{
-		deck.InsertIntoPickFromPile(user.ReturnCard(cardSpot));	// First insert the card into the pick from pile
-		user.PopCard(cardSpot);									// Then pop the card out of the user's hand
-	} else				// Computer is discarding a card
-	{
-		deck.InsertIntoPickFromPile(comp.ReturnCard(cardSpot));
-		comp.PopCard(cardSpot);
-	}
-}
-
-void InsertPickFromPile(Player& user, Computer& comp, Cards& deck, int choice, int count)
-{
-	if (count%EVEN_ODD==0)		// User is inserting from pick from pile
-	{
-		for (int i = deck.GetPickFromPileSize()-1; i >= choice; i--)
-		{
-			user.InsertIntoHand(deck.GetPickFromPileCard(i));
-			deck.PopPickFromPileCard();
-		}
-	} else				// Computer is discarding a card
-	{
-		for (int i = deck.GetPickFromPileSize()-1; i >= choice; i--)
-		{
-			comp.InsertIntoHand(deck.GetPickFromPileCard(i));
-			deck.PopOffCard();
-		}
-	}
-
-}
-
-vector<int> CardsToMeld(Player& user)
-{
-	vector<int> cardsIWillMeld;
-	cout << "\n";
-	user.DisplayHand();
-		
-	int location = 0;
-
-	cout << "Enter the locations from your hand of the \ncards that you wish to meld (terminating with" <<  TERMINATE_NUMBER << "), \nin decreasing location order:\n";
-	while (location != TERMINATE_NUMBER)
-	{
-		cin >> location;
-		if (location != TERMINATE_NUMBER)
-			cardsIWillMeld.push_back(location);
-	}
-
-	return cardsIWillMeld;
-}
-
 void ScoreOutput(Player& user, Computer& comp, int count)
 {
-	cout << "\nAfter " << count << " rounds\n" <<		
+	cout << "After " << count << " rounds:\n" <<		
 		"Your current score: " << user.GetScore() << "\n" <<
 		comp.GetName() << "'s current score: " << comp.GetScore() << "\n" <<
 		"And the game continues...\n\n";

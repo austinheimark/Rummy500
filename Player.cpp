@@ -3,12 +3,6 @@
 
 #include "Player.h"
 
-#define PICK_FROM_DECK -1
-#define NOT_POSSIBLE -1
-#define YES 1
-#define TERMINATE_NUMBER -1
-#define RANK_OFFSET 2
-
 Player::Player(string name, int score)
 {
 	Name = name;
@@ -28,32 +22,32 @@ int Player::GetScore() const
 
 void Player::CalculateScore()
 {
-	for (int i = 0; i < MeldedCards.size(); i++)
+	for (unsigned int i = 0; i < MeldedCards.size(); i++)
 	{
 		string cardRank = MeldedCards[i].substr(0,MeldedCards[i].find('-'));
 		
 		int value = atoi(cardRank.c_str());
 
-		if (value < 10)
-			Score += 5;
-		else if (value >= 10 && value <= 13)
-			Score += 10;
+		if (value < Rank(8) + RANK_OFFSET)
+			Score += TWO_THROUGH_NINE_PTS;
+		else if (value >= Rank(8) + RANK_OFFSET && value <= Rank(11) + RANK_OFFSET)
+			Score += TEN_THROUGH_KING_PTS;
 		else 
-			Score += 15;
+			Score += ACE_POINTS;
 	}
 	
-	for (int i = 0; i < Hand.size(); i++)
+	for (unsigned int i = 0; i < Hand.size(); i++)
 	{
 		string cardRank = Hand[i].substr(0,Hand[i].find('-'));
 		
 		int value = atoi(cardRank.c_str());
 
-		if (value < 10)
-			Score -= 5;
-		else if (value >= 10 && value <= 13)
-			Score -= 10;
+		if (value < Rank(8) + RANK_OFFSET)
+			Score -= TWO_THROUGH_NINE_PTS;
+		else if (value >= Rank(8) + RANK_OFFSET && value <= Rank(11) + RANK_OFFSET)
+			Score -= TEN_THROUGH_KING_PTS;
 		else 
-			Score -= 15;
+			Score -= ACE_POINTS;
 	}
 }
 
@@ -62,12 +56,12 @@ int Player::GetHandSize() const
 	return Hand.size();
 }
 
-string Player::GetHandValue(int number) const
+string Player::GetHandValue(const int& number) const
 {
 	return Hand[number];
 }
 
-void Player::InsertIntoHand(string card)
+void Player::InsertIntoHand(const string& card)
 {
 	Hand.push_back(card);
 }
@@ -75,15 +69,15 @@ void Player::InsertIntoHand(string card)
 void Player::DisplayHand() const
 {
 	cout << "Your hand:\n";
-	for (int i = 0; i < Hand.size(); i++)
+	for (unsigned int i = 0; i < Hand.size(); i++)
 		cout << Hand[i] << " ";
-	cout << "\n\n";
+	cout << "\n";
 }
 
-int Player::WhatDeckToPickFrom(Cards deck) const
+int Player::WhatDeckToPickFrom(Cards& deck) const
 {	
 	int choice;
-	cout << "Would you like to pick up from the pick up pile (" << YES << " = YES)? ";
+	cout << "Would you like to pick up from the pick up pile? ";
 	cin >> choice;
 
 	if (choice == YES)	// They want to use cards from the pick up pile to meld but must check to see if it is possible!
@@ -92,10 +86,10 @@ int Player::WhatDeckToPickFrom(Cards deck) const
 		vector<string> cardsIWantToUseToMeld;
 		int firstLocationFromDeck;
 		
-		cout << "What is the bottom card location you wish to pick up from the deck? ";
+		cout << "\nWhat is the bottom card location you wish to pick up from the deck? ";
 		cin >> firstLocationFromDeck;
 
-		if (firstLocationFromDeck == -1)
+		if (firstLocationFromDeck == PICK_FROM_DECK)
 			return PICK_FROM_DECK;
 		else
 			return firstLocationFromDeck;		// Must return the location that they want to initially pick from 
@@ -106,18 +100,24 @@ int Player::WhatDeckToPickFrom(Cards deck) const
 	}
 }
 
-int Player::TestIfCanMeld (Cards& deck, vector<string> checkTheseCards) const
+int Player::TestIfCanMeld (Cards& deck, vector<string>& checkTheseCards) const
 {
 	// Must write the algorithm to determine if the supplied vector of strings are meldable
 	return 0;
 }
 
-int Player::WhatCardToDiscard (Cards deck) const
+int Player::WhatCardToDiscard (Cards& deck) const
 {
 	int cardToDiscard;
 
 	cout << "Which card would you like to discard? ";
 	cin >> cardToDiscard;
+
+	while (cardToDiscard < 0 || cardToDiscard >= GetHandSize() - 1)
+	{
+		cout << "That's an invalid indice. Try again! ";
+		cin >> cardToDiscard;
+	}
 
 	return cardToDiscard;
 }
@@ -127,12 +127,12 @@ void Player::OrganizeHand()
 	sort(Hand.begin(),Hand.end());
 }
 
-string Player::ReturnCard (int number) const
+string Player::ReturnCard (const int& number) const
 {
 	return Hand[number];
 }
 
-void Player::PopCard (int number)
+void Player::PopCard (const int& number)
 {
 	Hand.erase(Hand.begin() + number);
 }
@@ -140,7 +140,7 @@ void Player::PopCard (int number)
 void Player::DisplayMeldedCards () const
 {
 	cout << "Your melded cards: \n";
-	for (int i = 0; i < MeldedCards.size(); i++)
+	for (unsigned int i = 0; i < MeldedCards.size(); i++)
 	{
 		cout << MeldedCards[i];
 		if (i < MeldedCards.size() - 1)
@@ -149,10 +149,10 @@ void Player::DisplayMeldedCards () const
 	cout << "\n\n";
 }
 
-void Player::PopulateMeldedCards (vector<int> CardSpotsIWillMeld)
+void Player::PopulateMeldedCards (vector<int>& CardSpotsIWillMeld)
 {
 	// Want to populate 
-	for(int i = 0; i < CardSpotsIWillMeld.size(); i++)
+	for (unsigned int i = 0; i < CardSpotsIWillMeld.size(); i++)
 	{
 		int locale = CardSpotsIWillMeld[i];
 		string card = ReturnCard(locale);
@@ -167,14 +167,14 @@ vector<int> Player::SecondTimeMeld (Cards& deck) const
 {
 	// Then must determine if they can meld cards after picking up or not
 	int answer;
-	cout << "Would you like to meld (" << YES << " = YES)? ";
+	cout << "\nWould you like to meld? ";
 	cin >> answer;
 	
 	vector<int> cardsToMeld;
 
 	if (answer == 1)
 	{
-		cout << "\nWhich cards from your hand do you want to meld (terminate with " << TERMINATE_NUMBER << ")?\n";
+		cout << "\nWhich cards from your hand do you want to meld?\n";
 		int location = 0;
 		while (location != TERMINATE_NUMBER)
 		{
@@ -188,13 +188,109 @@ vector<int> Player::SecondTimeMeld (Cards& deck) const
 
 void Player::ClearHandAndMeldedCards()
 {
-	for (int i = 0; i < Hand.size(); i++)
+	Hand.clear();
+	MeldedCards.clear();
+}
+
+vector<int> Player::CardsToMeld()
+{
+	vector<int> cardsIWillMeld;
+	cout << "\n";
+	DisplayHand();
+		
+	int location = 0;
+
+	// Enters the locations of the cards the player wants to meld 
+	// into a vector, terminating with TERMINATE_NUMBER
+	cout << "\nEnter the locations from your hand of the \ncards that you wish to meld:\n";
+	while (location != TERMINATE_NUMBER)
 	{
-		Hand.pop_back();
+		cin >> location;
+		if (location != TERMINATE_NUMBER)
+			cardsIWillMeld.push_back(location);
 	}
 
-	for (int i = 0; i < MeldedCards.size(); i++)
+	return cardsIWillMeld;
+}
+
+void Player::GamePlay (Cards& deck, vector<string> compsMeldedCards, string& compsName)
+{
+	cout << "Your turn!\n\n";
+
+	cout << "Current pick up pile:\n";		// X represents the top of the deck
+	deck.DisplayAvailableCards();		// Show the player's what they are working with
+
+	OrganizeHand();
+	DisplayHand();
+	cout << "\n";
+	// Show the player the melded cards
+	DisplayMeldedCards();
+	
+	cout << compsName << "'s melded cards: \n";
+	for (unsigned int i = 0; i < compsMeldedCards.size(); i++)
+		cout << compsMeldedCards[i] << " ";
+	cout << "\n\n";
+
+	// First must choose cards to pick up
+	int choice = WhatDeckToPickFrom(deck);
+
+	if (choice != PICK_FROM_DECK)	// Picking from the pick up pile
 	{
-		MeldedCards.pop_back();
+		InsertFromPickFromPile(deck,choice);
+			
+		OrganizeHand();
+
+		// Populate the players newly melded cards
+		PopulateMeldedCards(CardsToMeld());
+		cout << "\n";
+		DisplayMeldedCards();
+	} else {	// Picking up from the top of the deck
+		InsertIntoHand(deck.ReturnCard(deck.GetDeckSize()-1));
+		deck.PopOffCard();
 	}
+		
+	if (choice == PICK_FROM_DECK && GetHandSize() > EMPTY)
+	{
+		cout << "\n";
+		OrganizeHand();
+		DisplayHand();
+	}
+	// This populates the users melded cards with a vector of cards that they are allowed to meld
+	if (GetHandSize() > EMPTY)
+	{
+		PopulateMeldedCards(SecondTimeMeld(deck));
+		if (GetHandSize() > EMPTY)
+		{
+			cout << "\n";
+			OrganizeHand();
+			DisplayHand();
+		}
+	}
+	cout << "\n";
+
+	// Finally, must discard a card
+	if(GetHandSize() > EMPTY)
+		DiscardCard(deck,WhatCardToDiscard(deck));
+
+	cout << "\n";
+}
+
+void Player::InsertFromPickFromPile (Cards& deck, const int& choice)
+{
+	for (int i = deck.GetPickFromPileSize()-1; i >= choice; i--)
+	{
+		InsertIntoHand(deck.GetPickFromPileCard(i));	// Insert the card into their hand
+		deck.PopPickFromPileCard();							// Remove that card from the pile
+	}
+}
+
+void Player::DiscardCard (Cards& deck, const int& cardSpot)
+{
+	deck.InsertIntoPickFromPile(ReturnCard(cardSpot));	// First insert the card into the pick from pile
+	PopCard(cardSpot);									// Then pop the card out of the user's hand
+}
+
+vector<string> Player::ReturnVectorOfMyMeldedCards () const
+{
+	return MeldedCards;
 }

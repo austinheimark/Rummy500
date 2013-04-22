@@ -80,7 +80,7 @@ void Cards::DisplayAvailableCards() const
 	cout << "\n\n";
 }
 
-string Cards::ReturnCard(int number) const
+string Cards::ReturnCard(const int& number) const
 {
 	return Deck[number];
 }
@@ -108,12 +108,12 @@ int Cards::GetPickFromPileSize() const
 	return PickFromPile.size();
 }
 
-string Cards::GetPickFromPileCard(int number) const
+string Cards::GetPickFromPileCard(const int& number) const
 {
 	return PickFromPile[number];
 }
 
-void Cards::InsertIntoPickFromPile(string card)
+void Cards::InsertIntoPickFromPile(const string& card)
 {
 	PickFromPile.push_back(card);
 }
