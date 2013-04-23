@@ -12,7 +12,6 @@
 using namespace std;
 
 #define PICK_FROM_DECK -1
-#define NOT_POSSIBLE -1
 #define YES 1
 #define TERMINATE_NUMBER -1
 #define RANK_OFFSET 2
@@ -20,6 +19,7 @@ using namespace std;
 #define TEN_THROUGH_KING_PTS 10
 #define ACE_POINTS 15
 #define EMPTY 0
+#define NUMBER_TO_CHECK 2
 
 class Player
 {
@@ -54,13 +54,8 @@ public:
 	// Determine what deck the player will pick from 
 	virtual int WhatDeckToPickFrom(Cards& deck) const;
 
-	// Start checking from number
-	// If can meld, return the number card that can be melded
-	// If cannot meld, return NOT_POSSIBLE
-	virtual int TestIfCanMeld (Cards& deck, vector<string>& checkTheseCards) const;
-
 	// Determines what card the player will discard
-	virtual int WhatCardToDiscard (Cards& deck) const;
+	virtual int WhatCardToDiscard () const;
 
 	// Sorts the players hand
 	void OrganizeHand();

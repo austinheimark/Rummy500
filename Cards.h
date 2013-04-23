@@ -8,13 +8,13 @@
 #include <algorithm>
 #include <ctime>
 
+using namespace std;
+
 #define DECK_SIZE 52
 #define CARDS_PER_PLAYER 7
 #define NUMBER_OF_RANKS 13
 #define NUMBER_OF_SUITS 4
 #define RANK_OFFSET 2
-
-using namespace std;
 
 enum Rank
 {

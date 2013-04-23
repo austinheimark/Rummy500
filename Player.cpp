@@ -80,40 +80,36 @@ int Player::WhatDeckToPickFrom(Cards& deck) const
 	cout << "Would you like to pick up from the pick up pile? ";
 	cin >> choice;
 
-	if (choice == YES)	// They want to use cards from the pick up pile to meld but must check to see if it is possible!
-	{		
-		// Define a vector of the cards the player wants to meld
-		vector<string> cardsIWantToUseToMeld;
+	// They want to use cards from the pick up pile to meld
+	if (choice == YES)
+	{
 		int firstLocationFromDeck;
 		
 		cout << "\nWhat is the bottom card location you wish to pick up from the deck? ";
 		cin >> firstLocationFromDeck;
 
-		if (firstLocationFromDeck == PICK_FROM_DECK)
-			return PICK_FROM_DECK;
-		else
-			return firstLocationFromDeck;		// Must return the location that they want to initially pick from 
+		while (firstLocationFromDeck < 0 || firstLocationFromDeck >= deck.GetPickFromPileSize())
+		{
+			cout << "Invalid location. Try again: ";
+			cin >> firstLocationFromDeck;
+		}
+
+		return firstLocationFromDeck;		// Must return the location that they want to initially pick from 
 	} else
 	{
-		// No option or they just want to pick from the deck
+		// They want to pick from the deck
 		return PICK_FROM_DECK;
 	}
 }
 
-int Player::TestIfCanMeld (Cards& deck, vector<string>& checkTheseCards) const
-{
-	// Must write the algorithm to determine if the supplied vector of strings are meldable
-	return 0;
-}
-
-int Player::WhatCardToDiscard (Cards& deck) const
+int Player::WhatCardToDiscard () const
 {
 	int cardToDiscard;
 
 	cout << "Which card would you like to discard? ";
 	cin >> cardToDiscard;
 
-	while (cardToDiscard < 0 || cardToDiscard >= GetHandSize() - 1)
+	while (cardToDiscard < 0 || cardToDiscard >= GetHandSize())
 	{
 		cout << "That's an invalid indice. Try again! ";
 		cin >> cardToDiscard;
@@ -270,7 +266,7 @@ void Player::GamePlay (Cards& deck, vector<string> compsMeldedCards, string& com
 
 	// Finally, must discard a card
 	if(GetHandSize() > EMPTY)
-		DiscardCard(deck,WhatCardToDiscard(deck));
+		DiscardCard(deck,WhatCardToDiscard());
 
 	cout << "\n";
 }

@@ -18,7 +18,6 @@ using namespace std;
 #define CARDS_DEALT 11
 #define DECK_SIZE 52
 #define PICK_FROM_DECK -1
-#define NOT_POSSIBLE -1
 #define EMPTY 0
 #define TERMINATE_NUMBER -1
 #define RANK_OFFSET 2
