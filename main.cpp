@@ -1,7 +1,7 @@
 // main.cpp - Rummy 500 test program
 // Written by Austin Heimark
 
-// Line count = 1,010
+// Line count = 1,035
 
 #include <iostream>
 #include <vector>
@@ -36,7 +36,7 @@ void outputEnding(Player& player, Computer& comp);
 void dealDeck(Player& player, Computer& comp, Cards& deck, int count);
 
 // Outputs the scores of each player after how many rounds
-void ScoreOutput(Player& user, Computer& comp, int count);
+void ScoreOutput(Player& user, Computer& comp, int roundCount);
 
 void main ()
 {
@@ -94,9 +94,15 @@ void main ()
 		// Round is over, must increment the round count
 		roundCount++;
 
+		int initialPlayerScore = user.GetScore();
+		int initialCompScore = comp.GetScore();
+		
 		// Calculate scores
 		user.CalculateScore();
 		comp.CalculateScore();
+
+		cout << "Points scored this round:\n" << user.GetName() << ": " << user.GetScore() - initialPlayerScore << "\n" <<
+			comp.GetName() << ": " << comp.GetScore() - initialCompScore << "\n\n";
 	}
 	// Someone has won by now
 	outputEnding(user,comp);
@@ -126,12 +132,9 @@ void outputIntro()
 		Rank(0) + RANK_OFFSET << " ... " << Rank(8) + RANK_OFFSET << " --> " << TWO_THROUGH_NINE_POINTS << " points\n" <<
 		Rank(9) + RANK_OFFSET << " ... " << Rank(11) + RANK_OFFSET << " --> " << TEN_THROUGH_KING_POINTS << " points\n" <<
 		Rank(12) + RANK_OFFSET << " --> " << ACE_POINTS << " points. " <<
-		"New hands keep being dealt \nuntil a player has over " << WINNING_SCORE << " points\n" <<
+		"New hands keep being dealt \nuntil a player has over " << WINNING_SCORE << " points.\n" <<
 		"If both players end with over " << WINNING_SCORE << "\npoints, player with more points wins.\n" <<
-		"In the event of two players being tied \nwith over " << WINNING_SCORE << " points:\n" <<
-		"Another hand will be played.\n" <<
-		"Hands will then continue to be \nplayed until one player has a higher score.\n" <<
-		"When you are prompted for card \\n" <<
+		"When you are prompted for card \n" <<
 		"locations, it is zero based. That is\n" <<
 		"if you want the first card from your hand\n" <<
 		"you would enter '" << EMPTY << "'. If choosing multiple cards\n" <<
@@ -143,12 +146,14 @@ void outputIntro()
 		"However, the non face cards will be sorted!\n" <<
 		"You must meld at least one card when you pick\nit up from the pick up pile\n" <<
 		YES << " means 'Yes' when asked yes/no questions.\nAnything else will be interpreted as a no.\n" <<
-		"When melding cards, always tell which cards you \nwant to meld from your hand in decreasing location order\n" <<
+		"When melding cards, always tell which cards you \nwant to meld from your hand in decreasing location order.\n" <<
 		"And when telling the computer these meld spots, \nterminate your entries with a " << TERMINATE_NUMBER << ".\n";
 }
 
 void outputEnding(Player& player, Computer& comp)
 {
+	cout << "Final Score:\n" << player.GetName() << ": " << player.GetScore() << "\n" << comp.GetName() << ": " << comp.GetScore() << "\n\n";
+
 	// Whichever player has the higher score wins
 	if ( player.GetScore() >= comp.GetScore() )
 		cout << "Congratulations, " << player.GetName() << "! You beat the computer in Rummy 500!";
@@ -191,9 +196,9 @@ void dealDeck(Player& user, Computer& comp, Cards& deck, int count)
 	}
 }
 
-void ScoreOutput(Player& user, Computer& comp, int count)
+void ScoreOutput(Player& user, Computer& comp, int roundCount)
 {
-	cout << "After " << count << " rounds:\n" <<		
+	cout << "After " << roundCount << " rounds:\n" <<		
 		"Your current score: " << user.GetScore() << "\n" <<
 		comp.GetName() << "'s current score: " << comp.GetScore() << "\n" <<
 		"And the game continues...\n\n";

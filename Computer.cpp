@@ -139,12 +139,6 @@ void Computer::GamePlay (Cards& deck)
 
 	OrganizeHand();
 
-	// This populates the computers melded cards with a vector of cards they melded
-	if (GetHandSize() > EMPTY)
-		PopulateMeldedCards(SecondTimeMeld());
-
-	OrganizeHand();
-
 	// Finally the computer must discard a card
 	if(GetHandSize() > EMPTY)
 		DiscardCard(deck,WhatCardToDiscard());

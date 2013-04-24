@@ -226,17 +226,18 @@ void Player::GamePlay (Cards& deck, const vector<string>& compsMeldedCards, cons
 	} else {	// Picking up from the top of the deck
 		InsertIntoHand(deck.TopDeckCard());
 		deck.PopOffCard();
+	
+		// Only need to ask them to meld if they didn't want to the first time
+		// This populates the users melded cards with a vector of cards that they are allowed to meld
+		if (GetHandSize() > EMPTY)
+		{
+			cout << "\n";
+			OrganizeHand();
+			DisplayHand();
+			PopulateMeldedCards(SecondTimeMeld());
+		}
 	}
 	
-	// This populates the users melded cards with a vector of cards that they are allowed to meld
-	if (GetHandSize() > EMPTY)
-	{
-		cout << "\n";
-		OrganizeHand();
-		DisplayHand();
-		PopulateMeldedCards(SecondTimeMeld());
-	}
-
 	cout << "\n";
 
 	// Finally, must discard a card
@@ -274,7 +275,7 @@ vector<string> Player::ReturnVectorOfMyMeldedCards () const
 vector<int> Player::RetrieveMeldSpots () const
 {
 	vector<int> cardsToMeld;
-	unsigned int location = EMPTY;
+	int location = EMPTY;
 
 	cout << "\nWhich cards from your hand do you want to meld?\n";
 
