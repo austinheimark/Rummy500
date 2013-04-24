@@ -1,7 +1,7 @@
 // main.cpp - Rummy 500 test program
 // Written by Austin Heimark
 
-// Line count = 1,048
+// Line count = 1,010
 
 #include <iostream>
 #include <vector>
