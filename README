@@ -2,7 +2,7 @@ Rummy 500
 Written by Austin Heimark
 
 -1000 line program in C++ for CMPSC 122 (intermediate programming)
--Card game Rummy 500 is played between the user and computer over the command line.
--Goal of the game is to be the first player to gain 500 points.
--You do this by using cards in straights or pairs.
--More rules described inside the game.
+-Card game Rummy 500 is played between the user and computer over the command line
+-Goal of the game is to be the first player to gain 500 points
+-You do this by using cards in straights or pairs
+-More rules described inside the game

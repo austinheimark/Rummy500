@@ -20,6 +20,8 @@ using namespace std;
 #define ACE_POINTS 15
 #define EMPTY 0
 #define NUMBER_TO_CHECK 2
+#define NEXT 1
+#define NEXT_NEXT 2
 
 class Player
 {
@@ -48,11 +50,10 @@ public:
 	virtual void InsertIntoHand(const string& card);
 
 	// Displays the hand
-	// Does not need to be virtual (once done testing)
-	virtual void DisplayHand() const;
+	void DisplayHand() const;
 
 	// Determine what deck the player will pick from 
-	virtual int WhatDeckToPickFrom(Cards& deck) const;
+	virtual int WhatDeckToPickFrom(const Cards& deck) const;
 
 	// Determines what card the player will discard
 	virtual int WhatCardToDiscard () const;
@@ -70,7 +71,7 @@ public:
 	virtual void DisplayMeldedCards () const;
 
 	// Populates melded cards and organizes them!
-	virtual void PopulateMeldedCards (vector<int>& CardSpotsIWillMeld);
+	virtual void PopulateMeldedCards (const vector<int>& CardSpotsIWillMeld);
 
 	// Enters this method because the player wants to meld cards
 	virtual vector<int> SecondTimeMeld () const;
@@ -82,7 +83,7 @@ public:
 	vector<int> CardsToMeld() const;
 
 	// The main gameplay for the game, iterates through each turn of every hand
-	virtual void GamePlay (Cards& deck, vector<string>& compsMeldedCards, const string& compsName);
+	virtual void GamePlay (Cards& deck, const vector<string>& compsMeldedCards, const string& compsName);
 
 	// Must insert the cards from player's choice all the way up to the end of the pile into the player's hand
 	// Called if the player wants to pick from the pick up pile

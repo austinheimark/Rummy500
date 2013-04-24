@@ -24,35 +24,35 @@ void Cards::InitializeDeck()
 				card += cardRank + RANK_OFFSET + '0';
 				break;
 			case(Ten):
-				card = "10";
+				card = TEN;
 				break;
 			case(Jack):
-				card = "11";
+				card = JACK;
 				break;
 			case(Queen):
-				card = "12";
+				card = QUEEN;
 				break;
 			case(King):
-				card = "13";
+				card = KING;
 				break;
 			case(Ace):
-				card = "14";
+				card = ACE;
 			}
 			
 			Suit cardSuit = Suit(s);
 			switch (cardSuit)
 			{
 			case(D):
-				card.append("-D" );
+				card.append(DIAMOND);
 				break;
 			case(H):
-				card.append("-H");
+				card.append(HEART);
 				break;
 			case(S):
-				card.append("-S");
+				card.append(SPADE);
 				break;
 			case(C):
-				card.append("-C");
+				card.append(CLUB);
 			}
 			Deck.push_back(card);
 		}
@@ -89,7 +89,7 @@ int Cards::GetDeckSize() const
 
 void Cards::AdjustPickPile()
 {
-	int number = Deck.size() - 1;
+	int number = Deck.size() - ONE;
 	string copy = Deck[number];
 	Deck.pop_back();
 	PickFromPile.push_back(copy);
@@ -117,5 +117,5 @@ void Cards::PopPickFromPileCard()
 
 string Cards::TopDeckCard () const
 {
-	return Deck[GetDeckSize()-1];
+	return Deck[GetDeckSize()-ONE];
 }

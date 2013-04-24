@@ -84,7 +84,7 @@ void main ()
 		{
 			// Must call gameplay every play through the hand
 			
-			if (count % EVEN_ODD == 0)	// Player is up
+			if (count % EVEN_ODD == EMPTY)	// Player is up
 				user.GamePlay(deck,comp.ReturnVectorOfMyMeldedCards(),comp.GetName());
 			else						// Computer is up
 				comp.GamePlay(deck);
@@ -134,7 +134,7 @@ void outputIntro()
 		"When you are prompted for card \\n" <<
 		"locations, it is zero based. That is\n" <<
 		"if you want the first card from your hand\n" <<
-		"you would enter '0'. If choosing multiple cards\n" <<
+		"you would enter '" << EMPTY << "'. If choosing multiple cards\n" <<
 		"use one space between numbers.\n" <<
 		"The first letter or number is the rank\n" <<
 		"and after the dash is the suit of the card\n" <<
@@ -162,9 +162,9 @@ void outputEnding(Player& player, Computer& comp)
 
 void dealDeck(Player& user, Computer& comp, Cards& deck, int count)
 {
-	if (count % EVEN_ODD == 0)	// Deal to user first
+	if (count % EVEN_ODD == EMPTY)	// Deal to user first
 	{
-		int i = 0;
+		unsigned int i = EMPTY;
 		while (i < EVEN_ODD*CARDS_DEALT)
 		{
 			user.InsertIntoHand(deck.TopDeckCard());
@@ -177,7 +177,7 @@ void dealDeck(Player& user, Computer& comp, Cards& deck, int count)
 		deck.AdjustPickPile();
 	} else						// Deal to computer first
 	{
-		int j = 0;
+		unsigned int j = EMPTY;
 		while (j < EVEN_ODD*CARDS_DEALT)
 		{
 			comp.InsertIntoHand(deck.TopDeckCard());

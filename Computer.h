@@ -11,7 +11,7 @@ using namespace std;
 
 #define DASH "-"
 
-// Sub-class of Player
+// Sub-class of Player class
 class Computer: public Player
 {
 public:
@@ -24,11 +24,11 @@ public:
 
 	// Overriding of the same method from Player class
 	// Computer needs to have intelligent decisions
-	virtual int WhatDeckToPickFrom(Cards& deck) const;
+	virtual int WhatDeckToPickFrom(const Cards& deck) const;
 
 	// Overriding of the same method from Player class
 	// Discards a random card out of the computer's hand
-	virtual int WhatCardToDiscard (Cards& deck) const;
+	virtual int WhatCardToDiscard () const;
 
 	// Overriding to display the computer's melded cards (because want to display the name of the computer)
 	virtual void DisplayMeldedCards () const;
@@ -41,4 +41,10 @@ public:
 	// Overriding GamePlay from the Player class, because the computer has different methods
 	// to determine it's gameplay
 	void GamePlay (Cards& deck);
+
+	// Converts the given Card's (as a string) rank into an integer value 
+	int ConvertRank (const string& index) const;
+
+	// Pulls the card suit off of index and returns it
+	string RetrieveCardSuit (const string& index) const;
 };

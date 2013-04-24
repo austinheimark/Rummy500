@@ -74,8 +74,8 @@ void Player::DisplayHand() const
 	cout << "\n";
 }
 
-int Player::WhatDeckToPickFrom(Cards& deck) const
-{	
+int Player::WhatDeckToPickFrom(const Cards& deck) const
+{
 	int choice;
 	cout << "Would you like to pick up from the pick up pile? ";
 	cin >> choice;
@@ -109,7 +109,7 @@ int Player::WhatCardToDiscard () const
 	cout << "Which card would you like to discard? ";
 	cin >> cardToDiscard;
 
-	while (cardToDiscard < 0 || cardToDiscard >= GetHandSize())
+	while (cardToDiscard < EMPTY || cardToDiscard >= GetHandSize())
 	{
 		cout << "That's an invalid indice. Try again! ";
 		cin >> cardToDiscard;
@@ -145,7 +145,7 @@ void Player::DisplayMeldedCards () const
 	cout << "\n\n";
 }
 
-void Player::PopulateMeldedCards (vector<int>& CardSpotsIWillMeld)
+void Player::PopulateMeldedCards (const vector<int>& CardSpotsIWillMeld)
 {
 	// Want to populate 
 	for (unsigned int i = 0; i < CardSpotsIWillMeld.size(); i++)
@@ -168,7 +168,7 @@ vector<int> Player::SecondTimeMeld () const
 	
 	vector<int> cardsToMeld;
 
-	if (answer == 1)
+	if (answer == YES)
 		cardsToMeld = RetrieveMeldSpots();
 	
 	return cardsToMeld;
@@ -191,7 +191,7 @@ vector<int> Player::CardsToMeld() const
 	return cardsIWillMeld;
 }
 
-void Player::GamePlay (Cards& deck, vector<string>& compsMeldedCards, const string& compsName)
+void Player::GamePlay (Cards& deck, const vector<string>& compsMeldedCards, const string& compsName)
 {
 	cout << "Your turn!\n\n";
 
@@ -253,7 +253,7 @@ void Player::GamePlay (Cards& deck, vector<string>& compsMeldedCards, const stri
 
 void Player::InsertFromPickFromPile (Cards& deck, const int& choice)
 {
-	for (int i = deck.GetPickFromPileSize()-1; i >= choice; i--)
+	for (int i = deck.GetPickFromPileSize()-NEXT; i >= choice; i--)
 	{
 		InsertIntoHand(deck.GetPickFromPileCard(i));	// Insert the card into their hand
 		deck.PopPickFromPileCard();							// Remove that card from the pile
@@ -274,7 +274,7 @@ vector<string> Player::ReturnVectorOfMyMeldedCards () const
 vector<int> Player::RetrieveMeldSpots () const
 {
 	vector<int> cardsToMeld;
-	int location = 0;
+	unsigned int location = EMPTY;
 
 	cout << "\nWhich cards from your hand do you want to meld?\n";
 

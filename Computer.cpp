@@ -3,24 +3,23 @@
 
 #include "Computer.h"
 
-int Computer::WhatDeckToPickFrom(Cards& deck) const
+int Computer::WhatDeckToPickFrom(const Cards& deck) const
 {
-	int i = 0; 
+	int i = EMPTY; 
 	while (i < GetHandSize() - 1)
 	{
-		string cardRank1 = Hand[i].substr(0,Hand[i].find(DASH));
-		int value1 = atoi(cardRank1.c_str());
-		string cardRank2 = Hand[i+1].substr(0,Hand[i+1].find(DASH));
-		int value2 = atoi(cardRank2.c_str());
+		// Retrieves the ranks of the cards at i and i + NEXT
+		int value1 = ConvertRank(Hand[i]);
+		int value2 = ConvertRank(Hand[i+NEXT]);
 
-		// Then look in the pick up pile for a card that matches the card values that are already the same in your hand
+		// If value1 and value2 are the same, then look for another card in the
+		// pick from pile that has the same value, if so return that index
+		// of the pick from pile
 		if (value1 == value2)
 		{
 			for (int j = 0; j < deck.GetPickFromPileSize(); j++)
 			{
-				string theCard = deck.GetPickFromPileCard(j);
-				string compareRank = theCard.substr(0,theCard.find(DASH));
-				int compareValue = atoi(compareRank.c_str());
+				int compareValue = ConvertRank(deck.GetPickFromPileCard(j));
 
 				if (value1 == compareValue)
 					return j;
@@ -33,7 +32,7 @@ int Computer::WhatDeckToPickFrom(Cards& deck) const
 	return PICK_FROM_DECK;
 }
 
-int Computer::WhatCardToDiscard (Cards& deck) const
+int Computer::WhatCardToDiscard () const
 {
 	int compHandSize = GetHandSize();
 
@@ -57,23 +56,19 @@ vector<int> Computer::SecondTimeMeld () const
 	vector<int> cardsCompWillMeld;
 
 	// Checks to see if can meld cards in their hand that are all the same value
-	unsigned int i = 0; 
+	unsigned int i = EMPTY; 
 	while (i < Hand.size() - NUMBER_TO_CHECK)
 	{
-		// Set a string equal to everything before the dash of that hand value (the rank)
-		// Then convert that to an int so you can easily compare
-		string cardRank1 = Hand[i].substr(0,Hand[i].find(DASH));
-		int value1 = atoi(cardRank1.c_str());
-		string cardRank2 = Hand[i+1].substr(0,Hand[i+1].find(DASH));
-		int value2 = atoi(cardRank2.c_str());
-		string cardRank3 = Hand[i+2].substr(0,Hand[i+2].find(DASH));
-		int value3 = atoi(cardRank3.c_str());
+		// Convert the certain card's rank to an integer value so easily comparable
+		int value1 = ConvertRank(Hand[i]);
+		int value2 = ConvertRank(Hand[i+NEXT]);
+		int value3 = ConvertRank(Hand[i+NEXT_NEXT]);
 
 		// Then check to see if those three cards all have the same rank, if so then you can meld!
 		if (value1 == value2 && value1 == value3)
 		{
-			cardsCompWillMeld.push_back(i+2);
-			cardsCompWillMeld.push_back(i+1);
+			cardsCompWillMeld.push_back(i+NEXT_NEXT);
+			cardsCompWillMeld.push_back(i+NEXT);
 			cardsCompWillMeld.push_back(i);
 
 			// Because you have populated the pick from deck
@@ -86,34 +81,27 @@ vector<int> Computer::SecondTimeMeld () const
 	// Now check to see if can meld cards with same suit and consecutive in order
 	if (cardsCompWillMeld.size() == EMPTY)
 	{
-		unsigned int j = 0;
+		unsigned int j = EMPTY;
 		while (j < Hand.size() - NUMBER_TO_CHECK)
 		{
-			// Sets a string cardRank to the value before the dash
-			// Then converts that string value to an integer
-			// Does this 3 times in a row
-			string cardRank1 = Hand[j].substr(0,Hand[j].find(DASH));
-			int value1 = atoi(cardRank1.c_str());
-			
-			string cardRank2 = Hand[j+1].substr(0,Hand[j+1].find(DASH));
-			int value2 = atoi(cardRank2.c_str());
-			
-			string cardRank3 = Hand[j+2].substr(0,Hand[j+2].find(DASH));
-			int value3 = atoi(cardRank3.c_str());
+			// Convert the certain card's rank to an integer value so easily comparable
+			int value1 = ConvertRank(Hand[j]);
+			int value2 = ConvertRank(Hand[j+NEXT]);
+			int value3 = ConvertRank(Hand[j+NEXT_NEXT]);
 
 			// Check if the three cards have consecutive values
 			if (value3 == value2 + 1 && value2 == value1 + 1)
 			{
-				string cardSuit1 = Hand[j].substr(Hand[j].find(DASH)+1,Hand[j].size() - (Hand[j].find(DASH)+1));
-				string cardSuit2 = Hand[j+1].substr(Hand[j+1].find(DASH)+1,Hand[j].size() - (Hand[j+1].find(DASH)+1));
-				string cardSuit3 = Hand[j+2].substr(Hand[j+2].find(DASH)+1,Hand[j].size() - (Hand[j+2].find(DASH)+1));
+				string cardSuit1 = RetrieveCardSuit(Hand[j]);
+				string cardSuit2 = RetrieveCardSuit(Hand[j+NEXT]);
+				string cardSuit3 = RetrieveCardSuit(Hand[j+NEXT_NEXT]);
 					
 				// Test to see if all the suits are also the same
 				// If so you add those card locations to the vector of card locations that the comp will meld
 				if (cardSuit1 == cardSuit2 && cardSuit2 == cardSuit3)
 				{
-					cardsCompWillMeld.push_back(j+2);
-					cardsCompWillMeld.push_back(j+1);
+					cardsCompWillMeld.push_back(j+NEXT_NEXT);
+					cardsCompWillMeld.push_back(j+NEXT);
 					cardsCompWillMeld.push_back(j);
 					j = Hand.size() - NUMBER_TO_CHECK;
 				} else
@@ -159,7 +147,27 @@ void Computer::GamePlay (Cards& deck)
 
 	// Finally the computer must discard a card
 	if(GetHandSize() > EMPTY)
-		DiscardCard(deck,WhatCardToDiscard(deck));
+		DiscardCard(deck,WhatCardToDiscard());
 
 	cout << "\n";
+}
+
+int Computer::ConvertRank (const string& index) const
+{
+	// Retrieves the card rank of card index by retrieving a substring from
+	// the start of index for the distance to DASH characters long
+	string cardRank = index.substr(0,index.find(DASH));
+	
+	// Converts the Rank (all numbers) into an integer value
+	int value = atoi(cardRank.c_str());
+	
+	// Returns that int value
+	return value;
+}
+
+string Computer::RetrieveCardSuit (const string& index) const
+{
+	// Gets a substring from after the DASH until the end of the string, which is the rank
+	string suit = index.substr(index.find(DASH)+NEXT,index.size() - (index.find(DASH)+NEXT));
+	return suit;
 }

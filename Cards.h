@@ -15,6 +15,16 @@ using namespace std;
 #define NUMBER_OF_RANKS 13
 #define NUMBER_OF_SUITS 4
 #define RANK_OFFSET 2
+#define ONE 1
+#define TEN "10"
+#define JACK "11"
+#define QUEEN "12"
+#define KING "13"
+#define ACE "14"
+#define DIAMOND "-D"
+#define SPADE "-S"
+#define CLUB "-C"
+#define HEART "-H"
 
 enum Rank
 {
