@@ -65,7 +65,7 @@ public:
 	// Returns the size of the pick up pile
 	int GetPickFromPileSize() const;
 
-	// Populates the pick from
+	// Populates the pick from pile
 	void AdjustPickPile();
 
 	// Returns card at number from the pick from pile

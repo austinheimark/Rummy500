@@ -43,7 +43,7 @@ void Cards::InitializeDeck()
 			switch (cardSuit)
 			{
 			case(D):
-				card.append("-D");
+				card.append("-D" );
 				break;
 			case(H):
 				card.append("-H");

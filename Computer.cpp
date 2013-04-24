@@ -23,15 +23,13 @@ int Computer::WhatDeckToPickFrom(Cards& deck) const
 				int compareValue = atoi(compareRank.c_str());
 
 				if (value1 == compareValue)
-				{
 					return j;
-				}
 			}
 		}
 		i++;
 	}
 
-	// No options
+	// No options, thus must just pick from the top of the deck
 	return PICK_FROM_DECK;
 }
 
@@ -64,7 +62,6 @@ vector<int> Computer::SecondTimeMeld () const
 	{
 		// Set a string equal to everything before the dash of that hand value (the rank)
 		// Then convert that to an int so you can easily compare
-
 		string cardRank1 = Hand[i].substr(0,Hand[i].find(DASH));
 		int value1 = atoi(cardRank1.c_str());
 		string cardRank2 = Hand[i+1].substr(0,Hand[i+1].find(DASH));
@@ -78,6 +75,8 @@ vector<int> Computer::SecondTimeMeld () const
 			cardsCompWillMeld.push_back(i+2);
 			cardsCompWillMeld.push_back(i+1);
 			cardsCompWillMeld.push_back(i);
+
+			// Because you have populated the pick from deck
 			i = Hand.size() - NUMBER_TO_CHECK;
 		} else
 			i++;
@@ -127,7 +126,7 @@ vector<int> Computer::SecondTimeMeld () const
 	return cardsCompWillMeld;
 }
 
-void Computer::GamePlay (Cards& deck, vector<string> usersMeldedCards)
+void Computer::GamePlay (Cards& deck)
 {
 	cout << Name << "'s turn!\n";
 	

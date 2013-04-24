@@ -169,16 +169,8 @@ vector<int> Player::SecondTimeMeld () const
 	vector<int> cardsToMeld;
 
 	if (answer == 1)
-	{
-		cout << "\nWhich cards from your hand do you want to meld?\n";
-		int location = 0;
-		while (location != TERMINATE_NUMBER)
-		{
-			cin >> location;
-			if (location != TERMINATE_NUMBER)
-				cardsToMeld.push_back(location);
-		}
-	}
+		cardsToMeld = RetrieveMeldSpots();
+	
 	return cardsToMeld;
 }
 
@@ -188,28 +180,18 @@ void Player::ClearHandAndMeldedCards()
 	MeldedCards.clear();
 }
 
-vector<int> Player::CardsToMeld()
+vector<int> Player::CardsToMeld() const
 {
 	vector<int> cardsIWillMeld;
 	cout << "\n";
 	DisplayHand();
 		
-	int location = 0;
-
-	// Enters the locations of the cards the player wants to meld 
-	// into a vector, terminating with TERMINATE_NUMBER
-	cout << "\nEnter the locations from your hand of the \ncards that you wish to meld:\n";
-	while (location != TERMINATE_NUMBER)
-	{
-		cin >> location;
-		if (location != TERMINATE_NUMBER)
-			cardsIWillMeld.push_back(location);
-	}
+	cardsIWillMeld = RetrieveMeldSpots();
 
 	return cardsIWillMeld;
 }
 
-void Player::GamePlay (Cards& deck, vector<string> compsMeldedCards, string& compsName)
+void Player::GamePlay (Cards& deck, vector<string>& compsMeldedCards, const string& compsName)
 {
 	cout << "Your turn!\n\n";
 
@@ -238,35 +220,33 @@ void Player::GamePlay (Cards& deck, vector<string> compsMeldedCards, string& com
 
 		// Populate the players newly melded cards
 		PopulateMeldedCards(CardsToMeld());
+
 		cout << "\n";
 		DisplayMeldedCards();
 	} else {	// Picking up from the top of the deck
 		InsertIntoHand(deck.TopDeckCard());
 		deck.PopOffCard();
 	}
-		
-	if (choice == PICK_FROM_DECK && GetHandSize() > EMPTY)
+	
+	// This populates the users melded cards with a vector of cards that they are allowed to meld
+	if (GetHandSize() > EMPTY)
 	{
 		cout << "\n";
 		OrganizeHand();
 		DisplayHand();
-	}
-	// This populates the users melded cards with a vector of cards that they are allowed to meld
-	if (GetHandSize() > EMPTY)
-	{
 		PopulateMeldedCards(SecondTimeMeld());
-		if (GetHandSize() > EMPTY)
-		{
-			cout << "\n";
-			OrganizeHand();
-			DisplayHand();
-		}
 	}
+
 	cout << "\n";
 
 	// Finally, must discard a card
 	if(GetHandSize() > EMPTY)
+	{
+		OrganizeHand();
+		DisplayHand();
+		cout << "\n";
 		DiscardCard(deck,WhatCardToDiscard());
+	}
 
 	cout << "\n";
 }
@@ -289,4 +269,21 @@ void Player::DiscardCard (Cards& deck, const int& cardSpot)
 vector<string> Player::ReturnVectorOfMyMeldedCards () const
 {
 	return MeldedCards;
+}
+
+vector<int> Player::RetrieveMeldSpots () const
+{
+	vector<int> cardsToMeld;
+	int location = 0;
+
+	cout << "\nWhich cards from your hand do you want to meld?\n";
+
+	while (location != TERMINATE_NUMBER)
+	{
+		cin >> location;
+		if (location != TERMINATE_NUMBER)
+			cardsToMeld.push_back(location);
+	}
+
+	return cardsToMeld;
 }

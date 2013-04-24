@@ -17,7 +17,6 @@ using namespace std;
 #define ACE_POINTS 15
 #define CARDS_DEALT 11
 #define DECK_SIZE 52
-#define PICK_FROM_DECK -1
 #define EMPTY 0
 #define TERMINATE_NUMBER -1
 #define RANK_OFFSET 2
@@ -87,18 +86,18 @@ void main ()
 			
 			if (count % EVEN_ODD == 0)	// Player is up
 				user.GamePlay(deck,comp.ReturnVectorOfMyMeldedCards(),comp.GetName());
-			else
-				comp.GamePlay(deck,user.ReturnVectorOfMyMeldedCards());
+			else						// Computer is up
+				comp.GamePlay(deck);
 
 			count++;
 		}
+		// Round is over, must increment the round count
 		roundCount++;
 
 		// Calculate scores
 		user.CalculateScore();
 		comp.CalculateScore();
 	}
-
 	// Someone has won by now
 	outputEnding(user,comp);
 

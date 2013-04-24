@@ -40,5 +40,5 @@ public:
 
 	// Overriding GamePlay from the Player class, because the computer has different methods
 	// to determine it's gameplay
-	virtual void GamePlay (Cards& deck, vector<string> usersMeldedCards);
+	void GamePlay (Cards& deck);
 };

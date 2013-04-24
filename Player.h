@@ -79,10 +79,10 @@ public:
 	virtual void ClearHandAndMeldedCards();
 
 	// Populates a vector of the cards that the player will meld from their own hand
-	vector<int> CardsToMeld();
+	vector<int> CardsToMeld() const;
 
 	// The main gameplay for the game, iterates through each turn of every hand
-	virtual void GamePlay (Cards& deck, vector<string> compsMeldedCards, string& compsName);
+	virtual void GamePlay (Cards& deck, vector<string>& compsMeldedCards, const string& compsName);
 
 	// Must insert the cards from player's choice all the way up to the end of the pile into the player's hand
 	// Called if the player wants to pick from the pick up pile
@@ -94,9 +94,12 @@ public:
 	// Retruns a vector of the computer's melded cards
 	virtual vector<string> ReturnVectorOfMyMeldedCards () const;
 
+	// Returns a vector of the card locations that the player wants to meld
+	vector<int> RetrieveMeldSpots () const;
+
 protected:
-	string Name;	// Player name
-	int Score;		// Player score
+	string Name;
+	int Score;
 	vector<string> MeldedCards;
 	vector<string> Hand;
 };
